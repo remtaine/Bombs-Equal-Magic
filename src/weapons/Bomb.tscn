@@ -152,7 +152,6 @@ shape = SubResource( 1 )
 position = Vector2( 0, -1 )
 frames = SubResource( 23 )
 animation = "ready"
-frame = 2
 playing = true
 
 [node name="TooLongTimer" type="Timer" parent="."]
@@ -194,6 +193,7 @@ __meta__ = {
 show_behind_parent = true
 scale = Vector2( 0.2, 0.2 )
 lifetime = 0.5
+visibility_rect = Rect2( -320, -180, 640, 360 )
 local_coords = false
 draw_order = 1
 process_material = SubResource( 30 )

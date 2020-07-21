@@ -45,8 +45,9 @@ _global_script_class_icons={
 [application]
 
 config/name="Mage Warfare"
+config/description="Turn-based Mage Warfare"
 run/main_scene="res://src/levels/Level1.tscn"
-config/icon="res://icon.png"
+config/use_custom_user_dir=true
 
 [debug]
 
@@ -160,4 +161,5 @@ change_weapon_right={
 
 [rendering]
 
+quality/2d/use_pixel_snap=true
 environment/default_environment="res://default_env.tres"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://src/levels/Level.gd" type="Script" id=1]
 [ext_resource path="res://images/background/bg_0.png" type="Texture" id=2]
@@ -15,6 +15,51 @@
 [ext_resource path="res://images/bg effects/decor/flowers_props.png" type="Texture" id=13]
 [ext_resource path="res://images/bg effects/decor/wooden_plate.png" type="Texture" id=14]
 [ext_resource path="res://images/bg effects/decor/grass_props.png" type="Texture" id=15]
+[ext_resource path="res://fonts/Pixels TEXT.ttf" type="DynamicFontData" id=16]
+[ext_resource path="res://images/white square.png" type="Texture" id=17]
+[ext_resource path="res://images/bg effects/bird_flying_anim_strip_3.png" type="Texture" id=18]
+[ext_resource path="res://images/bg effects/bird_flying_anim_strip_3 flipped.png" type="Texture" id=19]
+[ext_resource path="res://src/helpers/CameraMan.tscn" type="PackedScene" id=20]
+
+[sub_resource type="CanvasItemMaterial" id=1]
+particles_animation = true
+particles_anim_h_frames = 3
+particles_anim_v_frames = 1
+particles_anim_loop = true
+
+[sub_resource type="Gradient" id=7]
+offsets = PoolRealArray( 0, 0.544444, 1 )
+colors = PoolColorArray( 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture" id=8]
+gradient = SubResource( 7 )
+
+[sub_resource type="ParticlesMaterial" id=2]
+emission_shape = 2
+emission_box_extents = Vector3( 320, 180, 1 )
+flag_disable_z = true
+direction = Vector3( -1, 0, 0 )
+spread = 20.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 30.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+color_ramp = SubResource( 8 )
+anim_speed = 15.0
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 16 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 16 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 48
+font_data = ExtResource( 16 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 24
+font_data = ExtResource( 16 )
 
 [node name="Level1" type="Node2D"]
 script = ExtResource( 1 )
@@ -176,32 +221,136 @@ texture = ExtResource( 14 )
 position = Vector2( 360.109, 41.3054 )
 texture = ExtResource( 10 )
 
+[node name="BirdParticlesLeft" type="Particles2D" parent="Decor"]
+self_modulate = Color( 1, 1, 1, 0.588235 )
+material = SubResource( 1 )
+position = Vector2( 320, 0 )
+z_index = -1
+amount = 1
+lifetime = 5.0
+visibility_rect = Rect2( -320, -180, 640, 360 )
+local_coords = false
+process_material = SubResource( 2 )
+texture = ExtResource( 18 )
+
+[node name="BirdParticlesRight" type="Particles2D" parent="Decor"]
+self_modulate = Color( 1, 1, 1, 0.588235 )
+material = SubResource( 1 )
+position = Vector2( 320, 0 )
+scale = Vector2( -1, 1 )
+z_index = -1
+amount = 1
+lifetime = 5.0
+visibility_rect = Rect2( -320, -180, 640, 360 )
+local_coords = false
+process_material = SubResource( 2 )
+texture = ExtResource( 19 )
+
+[node name="CameraMan" parent="." instance=ExtResource( 20 )]
+
 [node name="Characters" type="YSort" parent="."]
 script = ExtResource( 7 )
 
-[node name="Mage1" parent="Characters" instance=ExtResource( 6 )]
+[node name="BlueTeam" type="YSort" parent="Characters"]
+
+[node name="Mage1" parent="Characters/BlueTeam" instance=ExtResource( 6 )]
 position = Vector2( 116.789, 106.088 )
 instance_name = "Alvaro"
 
-[node name="Shroom1" parent="Characters" instance=ExtResource( 8 )]
+[node name="Mage2" parent="Characters/BlueTeam" instance=ExtResource( 6 )]
+position = Vector2( 282.132, 152.999 )
+instance_name = "Basil"
+
+[node name="Mage3" parent="Characters/BlueTeam" instance=ExtResource( 6 )]
+position = Vector2( 488.215, -22.5297 )
+instance_name = "Cosmo"
+
+[node name="RedTeam" type="YSort" parent="Characters"]
+
+[node name="Shroom1" parent="Characters/RedTeam" instance=ExtResource( 8 )]
 position = Vector2( 463.784, 151.877 )
 instance_name = "Delilah"
 team = "Team 2"
 
-[node name="Mage2" parent="Characters" instance=ExtResource( 6 )]
-position = Vector2( 282.132, 152.999 )
-instance_name = "Basil"
-
-[node name="Shroom2" parent="Characters" instance=ExtResource( 8 )]
+[node name="Shroom2" parent="Characters/RedTeam" instance=ExtResource( 8 )]
 position = Vector2( 293.903, 40.0481 )
 instance_name = "Esme"
+team = "Team 2"
 
-[node name="Mage3" parent="Characters" instance=ExtResource( 6 )]
-position = Vector2( 488.215, -22.5297 )
-instance_name = "Cosmo"
-
-[node name="Shroom3" parent="Characters" instance=ExtResource( 8 )]
+[node name="Shroom3" parent="Characters/RedTeam" instance=ExtResource( 8 )]
 position = Vector2( 548.578, -24.4426 )
 instance_name = "Faye"
+team = "Team 2"
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="BlueTeamHPLabel" type="Label" parent="HUD"]
+margin_left = 5.0
+margin_top = 150.0
+margin_right = 45.0
+margin_bottom = 164.0
+custom_fonts/font = SubResource( 3 )
+text = "Blue Team"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BlueTeamHP" type="TextureProgress" parent="HUD/BlueTeamHPLabel"]
+margin_left = 38.0566
+margin_top = 4.65637
+margin_right = 138.057
+margin_bottom = 104.656
+rect_scale = Vector2( 1, 0.1 )
+value = 50.0
+texture_under = ExtResource( 17 )
+texture_progress = ExtResource( 17 )
+tint_under = Color( 1, 1, 1, 0.588235 )
+tint_progress = Color( 0.403922, 0.560784, 0.796078, 1 )
+
+[node name="RedTeamHPLabel" type="Label" parent="HUD"]
+margin_left = 8.54821
+margin_top = 160.0
+margin_right = 71.5482
+margin_bottom = 174.0
+custom_fonts/font = SubResource( 4 )
+text = "Red Team"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RedTeamHP" type="TextureProgress" parent="HUD/RedTeamHPLabel"]
+margin_left = 33.6936
+margin_top = 5.24939
+margin_right = 133.694
+margin_bottom = 105.249
+rect_scale = Vector2( 1, 0.1 )
+value = 50.0
+texture_under = ExtResource( 17 )
+texture_progress = ExtResource( 17 )
+tint_under = Color( 1, 1, 1, 0.588235 )
+tint_progress = Color( 0.741176, 0.317647, 0.352941, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimeLabel" type="Label" parent="HUD"]
+margin_left = 154.737
+margin_top = -1.1842
+margin_right = 194.737
+margin_bottom = 33.8158
+custom_fonts/font = SubResource( 5 )
+text = "15"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimeLeftLabel" type="Label" parent="HUD"]
+margin_left = 152.647
+margin_top = -4.38276
+margin_right = 207.647
+margin_bottom = 13.6172
+custom_fonts/font = SubResource( 6 )
+text = "Time"
+__meta__ = {
+"_edit_use_anchors_": false
+}

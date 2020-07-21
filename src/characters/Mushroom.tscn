@@ -8,4 +8,7 @@ instance_name = "Mushroom"
 
 [node name="AnimatedSprite" parent="." index="0"]
 frames = ExtResource( 1 )
-frame = 4
+frame = 3
+
+[node name="NameLabel" parent="Labels" index="0"]
+self_modulate = Color( 0.741176, 0.317647, 0.352941, 1 )

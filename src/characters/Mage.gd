@@ -17,7 +17,7 @@ onready var name_label := $Labels/NameLabel
 
 onready var dust_resource := preload("res://src/effects/Dust.tscn")
 onready var bomb_resource := preload("res://src/weapons/Bomb.tscn")
-onready var others_handler := get_parent().get_parent().get_node("Weapons")
+onready var others_handler := get_parent().get_parent().get_parent().get_node("Weapons")
 onready var weapons = $CrosshairPivot/Weapons
 onready var camera := $Camera2D
 
@@ -53,6 +53,7 @@ var _phase : String = "NONE"
 var _weapon = 0
 
 signal turn_done
+signal changed_leader(leader)
 
 var TEAMS = {
 	player1 = "Team 1",
@@ -96,20 +97,25 @@ func _ready():
 	
 	setup_sounds()
 
-func setup(m):
-	connect("turn_done", m, "choose_next_active_character")
+func setup(o):
+	connect("turn_done", o, "choose_next_active_character")
+
+func level_setup(o):
+	connect("changed_leader", o, "change_camera_leader")
 
 func setup_sounds():
 	sound_launch_array = [sound_launch1]
 	#TODO add other array parts
 	
 func set_active():
-	camera.current = true
+	currently_selected = true
+#	camera.current = true
 	set_physics_process(true)
 	change_phase(PHASES.MOVE)
 	change_state(STATES.IDLE)
 	
 func set_inactive():
+	currently_selected = false
 	emit_signal("turn_done")
 	change_phase(PHASES.IDLE)
 	change_state(STATES.IDLE)
@@ -172,15 +178,9 @@ func shoot():
 
 func update_health(dmg):
 	set_process(true)
-	tween.interpolate_property(self, "hp", hp, hp-dmg, 3.0, tween.TRANS_LINEAR, tween.EASE_IN)
+	sprite.set_animation("hurt")
+	tween.interpolate_property(self, "hp", hp, hp-dmg, 2.5, tween.TRANS_LINEAR, tween.EASE_IN)
 	tween.start()
-	
-	if hp > 0:
-		pass
-		#TODO add tween
-	else:
-		pass
-		#TODO die
 		
 func enter_state():
 	match _state:
@@ -211,7 +211,8 @@ func spawn_weapon():
 			var bomb = bomb_resource.instance()
 			bomb.setup(self, crosshair.global_position, crosshair.global_position - crosshair_pivot.global_position, arrow.value)
 			others_handler.add_child(bomb)
-	
+
+			emit_signal("changed_leader", bomb)
 			crosshair_pivot.visible = false
 			arrow.value = 0
 		WEAPONS.SPEAR:
@@ -318,6 +319,16 @@ func change_phase(phase):
 		_phase = phase
 		enter_phase()
 
+func _on_Tween_tween_all_completed(): #only for health so far
+	if hp > 0:
+		sprite.set_animation("idle")
+		set_process(false)
+	else:
+		sprite.set_animation("die")
 
-func _on_Tween_tween_all_completed():
-	set_process(false)
+
+func _on_AnimatedSprite_animation_finished():
+	if sprite.animation == "die":
+		if currently_selected:
+			set_inactive()
+		queue_free() #TODO add to die list
