@@ -4,16 +4,21 @@ extends Character
 const GRAVITY = 3
 
 onready var sprite := $AnimatedSprite
+
 onready var crosshair_pivot := $CrosshairPivot
 onready var crosshair := $CrosshairPivot/Crosshair
 onready var arrow := $CrosshairPivot/Arrow
+
+onready var tween := $Tween
 
 onready var state_label := $Labels/StateLabel
 onready var hp_label := $Labels/HPLabel
 onready var name_label := $Labels/NameLabel
 
+onready var dust_resource := preload("res://src/effects/Dust.tscn")
 onready var bomb_resource := preload("res://src/weapons/Bomb.tscn")
-onready var weapons_holder := get_parent().get_parent().get_node("Weapons")
+onready var others_handler := get_parent().get_parent().get_node("Weapons")
+onready var weapons = $CrosshairPivot/Weapons
 onready var camera := $Camera2D
 
 onready var launch_audio := $Audio/LaunchAudio
@@ -45,6 +50,7 @@ var current_speed : Vector2 = Vector2(0, 0)
 
 var _state : String = "NONE"
 var _phase : String = "NONE"
+var _weapon = 0
 
 signal turn_done
 
@@ -55,10 +61,15 @@ var TEAMS = {
 	player4 = "Team 4",
 }
 
-
+var WEAPONS = {
+	BOMB = 0,
+	SPEAR = 1,
+	ORB = 2
+}
 var PHASES = {
 	IDLE = "IDLE PHASE",
 	MOVE = "MOVING PHASE",
+	CHOOSE_WEAPON = "CHOOSING WEAPON PHASE",
 	SHOOT = "SHOOTING PHASE"
 }
 
@@ -75,6 +86,7 @@ var STATES = {
 }
 
 func _ready():
+	set_process(false)
 	change_phase(PHASES.IDLE)
 	change_state(STATES.IDLE)
 	set_physics_process(false)
@@ -96,7 +108,6 @@ func set_active():
 	set_physics_process(true)
 	change_phase(PHASES.MOVE)
 	change_state(STATES.IDLE)
-	print("NEW CHARACTER")
 	
 func set_inactive():
 	emit_signal("turn_done")
@@ -111,6 +122,9 @@ func _physics_process(delta):
 		PHASES.SHOOT:
 			shoot()
 
+func _process(delta):
+	hp_label.text = String(ceil(hp))
+	
 func move():
 	if not is_bot:
 		interpret_input()
@@ -141,8 +155,10 @@ func move():
 
 	if is_flipped:
 		crosshair_pivot.scale.x = -1
+		weapons.scale.x = -1
 	else:
 		crosshair_pivot.scale.x = 1
+		weapons.scale.x = 1
 		
 	current_speed.y += 3
 
@@ -155,8 +171,10 @@ func shoot():
 		do_ai_stuff()
 
 func update_health(dmg):
-	hp -= dmg
-	hp_label.text = String(hp)
+	set_process(true)
+	tween.interpolate_property(self, "hp", hp, hp-dmg, 2.0, tween.TRANS_LINEAR, tween.EASE_IN)
+	tween.start()
+	
 	if hp > 0:
 		pass
 		#TODO add tween
@@ -168,6 +186,10 @@ func enter_state():
 	match _state:
 		STATES.JUMP:
 			sprite.set_animation("jump_up")
+			var dust = dust_resource.instance()
+			dust.setup("jump", global_position)
+			others_handler.add_child(dust)
+
 			current_speed.y = -jump_speed
 			
 		STATES.RUN:
@@ -182,7 +204,7 @@ func enter_state():
 			play_sound("launch")
 			var bomb = bomb_resource.instance()
 			bomb.setup(self, crosshair.global_position, crosshair.global_position - crosshair_pivot.global_position, arrow.value)
-			weapons_holder.add_child(bomb)
+			others_handler.add_child(bomb)
 	
 			crosshair_pivot.visible = false
 			arrow.value = 0
@@ -204,7 +226,9 @@ func interpret_input():
 						crosshair_pivot.rotation_degrees -= 1
 					else:
 						crosshair_pivot.rotation_degrees += 1
-			
+				elif Input.is_action_pressed("change_weapon_right"):
+					pass
+					#TODO change actively selected
 			elif _state == STATES.THROW:
 				if Input.is_action_pressed("select"):
 					arrow.value += 1
@@ -241,8 +265,11 @@ func play_sound(sound):
 			launch_audio.play()
 
 func exit_state():
-	#exits current state
-	pass
+	match _state:
+		STATES.JUMP:
+			var dust = dust_resource.instance()
+			dust.setup("land", global_position)
+			others_handler.add_child(dust)
 
 func change_state(state):
 	if _state != state:
@@ -269,3 +296,7 @@ func change_phase(phase):
 		exit_phase()
 		_phase = phase
 		enter_phase()
+
+
+func _on_Tween_tween_all_completed():
+	set_process(false)

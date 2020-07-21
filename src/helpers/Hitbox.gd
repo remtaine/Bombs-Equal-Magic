@@ -26,7 +26,4 @@ func deactivate():
 
 func _on_Hitbox_body_entered(body):
 	if body.is_in_group("characters"):
-		print("whoops")
 		body.update_health(damage)
-	else:
-		print("not working")

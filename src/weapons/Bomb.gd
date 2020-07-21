@@ -51,7 +51,7 @@ func _physics_process(delta):
 		var collision = get_slide_collision(0)
 		if collision != null:
 			direction = direction.bounce(collision.normal) # do ball bounce
-			strength *= 0.6
+			strength *= 0.7
 			velocity = speed * direction * strength
 	
 	if not timer.is_stopped():
@@ -89,3 +89,7 @@ func _on_ExplosionAudio_finished():
 	if explosion_audio.stream in sound_explosion_array:
 		emit_signal("finished_exploding")
 		queue_free()
+
+func _on_TooLongTimer_timeout():
+	if timer.is_stopped() and sprite.animation == "ready":
+		timer.start()
