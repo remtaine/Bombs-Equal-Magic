@@ -6,11 +6,24 @@ const GRAVITY = 3
 onready var sprite := $AnimatedSprite
 onready var crosshair_pivot := $CrosshairPivot
 onready var crosshair := $CrosshairPivot/Crosshair
-onready var state_label := $StateLabel
-onready var hp_label := $HPLabel
+
+onready var state_label := $Labels/StateLabel
+onready var hp_label := $Labels/HPLabel
+onready var name_label := $Labels/NameLabel
+
 onready var bomb_resource := preload("res://src/weapons/Bomb.tscn")
 onready var weapons_holder := get_parent().get_parent().get_node("Weapons")
 onready var camera := $Camera2D
+
+onready var launch_audio := $Audio/LaunchAudio
+onready var sound_launch_array : Array = []
+onready var sound_launch1 := preload("res://sounds/launches/Launch_1.wav")
+onready var sound_launch2 := preload("res://sounds/launches/Launch_2.wav")
+onready var sound_launch3 := preload("res://sounds/launches/Launch_3.wav")
+onready var sound_launch4 := preload("res://sounds/launches/Launch_4.wav")
+onready var sound_launch5 := preload("res://sounds/launches/Launch_5.wav")
+onready var sound_launch6 := preload("res://sounds/launches/Launch_6.wav")
+onready var sound_launch7 := preload("res://sounds/launches/Launch_7.wav")
 
 export var instance_name : String = "Mage"
 export var team : String = "Team 1"
@@ -62,10 +75,18 @@ func _ready():
 	change_state(STATES.IDLE)
 	set_physics_process(false)
 	crosshair_pivot.visible = false
+	
+	name_label.text = instance_name
+	
+	setup_sounds()
 
 func setup(m):
 	connect("turn_done", m, "choose_next_active_character")
 
+func setup_sounds():
+	sound_launch_array = [sound_launch1]
+	#TODO add other array parts
+	
 func set_active():
 	camera.current = true
 	set_physics_process(true)
@@ -151,6 +172,8 @@ func enter_state():
 		STATES.IDLE:
 			sprite.set_animation("idle")
 		STATES.SHOOT:
+			#SPAWNING BOMB!
+			play_sound("launch")
 			var bomb = bomb_resource.instance()
 			bomb.setup(self, crosshair.global_position, crosshair.global_position - crosshair_pivot.global_position)
 			weapons_holder.add_child(bomb)
@@ -194,7 +217,13 @@ func do_ai_stuff():
 func bomb_exploded():
 	#TODO add timer before setting inactive
 	set_inactive()
-	
+
+func play_sound(sound):
+	match sound:
+		"launch":
+			launch_audio.stream = sound_launch_array[0]
+			launch_audio.play()
+
 func exit_state():
 	#exits current state
 	pass

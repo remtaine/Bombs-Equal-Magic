@@ -99,15 +99,15 @@ animations = [ {
 [sub_resource type="RectangleShape2D" id=18]
 extents = Vector2( 3.40263, 10 )
 
+[sub_resource type="DynamicFont" id=19]
+size = 8
+font_data = ExtResource( 5 )
+
 [sub_resource type="DynamicFont" id=20]
 size = 8
 font_data = ExtResource( 5 )
 
 [sub_resource type="DynamicFont" id=21]
-size = 8
-font_data = ExtResource( 5 )
-
-[sub_resource type="DynamicFont" id=19]
 size = 8
 font_data = ExtResource( 5 )
 
@@ -127,14 +127,15 @@ position = Vector2( -0.45196, 0.821745 )
 scale = Vector2( 1, 0.72 )
 shape = SubResource( 18 )
 
-[node name="NameLabel" type="Label" parent="."]
-margin_left = -19.5083
-margin_top = -23.7601
-margin_right = 20.4917
-margin_bottom = 1.23987
-custom_fonts/font = SubResource( 20 )
-text = "Mage
-"
+[node name="Labels" type="Node2D" parent="."]
+
+[node name="NameLabel" type="Label" parent="Labels"]
+margin_left = -19.7766
+margin_top = -30.9145
+margin_right = 20.2234
+margin_bottom = -5.91447
+custom_fonts/font = SubResource( 19 )
+text = "Mage"
 align = 1
 valign = 1
 script = ExtResource( 8 )
@@ -142,12 +143,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HPLabel" type="Label" parent="."]
+[node name="HPLabel" type="Label" parent="Labels"]
 margin_left = -12.1719
 margin_top = -16.8405
 margin_right = 11.8281
 margin_bottom = -2.84052
-custom_fonts/font = SubResource( 21 )
+custom_fonts/font = SubResource( 20 )
 text = "100"
 align = 1
 valign = 1
@@ -156,16 +157,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="StateLabel" type="Label" parent="."]
+[node name="StateLabel" type="Label" parent="Labels"]
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -19.1779
-margin_top = -32.5953
-margin_right = 19.8221
-margin_bottom = -18.5953
+margin_left = -19.6154
+margin_top = -33.1941
+margin_right = 19.3846
+margin_bottom = -19.1941
 size_flags_horizontal = 2
 size_flags_vertical = 2
-custom_fonts/font = SubResource( 19 )
+custom_fonts/font = SubResource( 21 )
 text = "LABEL"
 align = 1
 valign = 1
@@ -173,6 +174,7 @@ script = ExtResource( 8 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+is_on = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 0, -46.8713 )
@@ -184,3 +186,7 @@ current = true
 position = Vector2( 25.7901, 0.810966 )
 scale = Vector2( 0.2, 0.2 )
 texture = ExtResource( 4 )
+
+[node name="Audio" type="Node2D" parent="."]
+
+[node name="LaunchAudio" type="AudioStreamPlayer2D" parent="Audio"]

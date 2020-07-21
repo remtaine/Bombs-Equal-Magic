@@ -7,6 +7,5 @@ func _input(event):
 		get_tree().reload_current_scene()
 	if event.is_action_pressed("toggle_labels"):
 		for child in character_holder.get_children():
-			for node in child.get_children():
-				if node is Label:
-					node.toggle()
+			for label in child.get_node("Labels"):
+				label.toggle()
