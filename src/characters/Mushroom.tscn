@@ -153,3 +153,4 @@ instance_name = "Mushroom"
 [node name="AnimatedSprite" parent="." index="0"]
 frames = SubResource( 31 )
 animation = "run"
+frame = 0

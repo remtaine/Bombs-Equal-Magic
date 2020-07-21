@@ -6,6 +6,7 @@ const GRAVITY = 3
 onready var sprite := $AnimatedSprite
 onready var crosshair_pivot := $CrosshairPivot
 onready var crosshair := $CrosshairPivot/Crosshair
+onready var arrow := $CrosshairPivot/Arrow
 
 onready var state_label := $Labels/StateLabel
 onready var hp_label := $Labels/HPLabel
@@ -33,6 +34,8 @@ var currently_selected = false
 var is_flipped : bool = false
 
 var hp = 100
+
+var throw_strength :float = 0.0
 
 var run_accel : int = 25
 var jump_speed : int = 100
@@ -67,6 +70,7 @@ var STATES = {
 	
 	#for shoot phase
 	AIM = "AIMING",
+	THROW = "THROWING",
 	SHOOT = "SHOOTING",
 }
 
@@ -171,20 +175,25 @@ func enter_state():
 
 		STATES.IDLE:
 			sprite.set_animation("idle")
+		STATES.THROW:
+			arrow.value = 20
 		STATES.SHOOT:
 			#SPAWNING BOMB!
 			play_sound("launch")
 			var bomb = bomb_resource.instance()
-			bomb.setup(self, crosshair.global_position, crosshair.global_position - crosshair_pivot.global_position)
+			bomb.setup(self, crosshair.global_position, crosshair.global_position - crosshair_pivot.global_position, arrow.value)
 			weapons_holder.add_child(bomb)
+	
+			crosshair_pivot.visible = false
+			arrow.value = 0
 
 func interpret_input():
 	match _phase:
 		PHASES.SHOOT:
 			if _state == STATES.AIM:
 				if Input.is_action_just_pressed("select"):
-					change_state(STATES.SHOOT)
-					crosshair_pivot.visible = false
+					change_state(STATES.THROW)
+#					crosshair_pivot.visible = false
 				elif Input.is_action_pressed("aim_up"):
 					if is_flipped:
 						crosshair_pivot.rotation_degrees += 1
@@ -195,6 +204,13 @@ func interpret_input():
 						crosshair_pivot.rotation_degrees -= 1
 					else:
 						crosshair_pivot.rotation_degrees += 1
+			
+			elif _state == STATES.THROW:
+				if Input.is_action_pressed("select"):
+					arrow.value += 1
+				else:
+					change_state(STATES.SHOOT)
+		
 		PHASES.MOVE:
 			if Input.is_action_just_pressed("select") and current_speed == Vector2.ZERO:
 				change_phase(PHASES.SHOOT)
