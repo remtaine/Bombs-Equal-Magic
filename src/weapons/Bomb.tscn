@@ -152,6 +152,7 @@ shape = SubResource( 1 )
 position = Vector2( 0, -1 )
 frames = SubResource( 23 )
 animation = "ready"
+frame = 2
 playing = true
 
 [node name="TooLongTimer" type="Timer" parent="."]

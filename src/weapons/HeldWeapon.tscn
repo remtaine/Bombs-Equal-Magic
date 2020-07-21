@@ -20,7 +20,7 @@ tracks/0/keys = {
 }
 
 [node name="HeldWeapon" type="Sprite"]
-scale = Vector2( 1.06949, 0.930506 )
+scale = Vector2( 0.880066, 1.11993 )
 texture = ExtResource( 1 )
 region_enabled = true
 region_rect = Rect2( 16, 0, 8, 8 )

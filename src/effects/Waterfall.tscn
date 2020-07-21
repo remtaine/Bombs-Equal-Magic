@@ -71,17 +71,18 @@ animations = [ {
 
 [node name="WaterfallPart" type="AnimatedSprite" parent="."]
 frames = SubResource( 5 )
-frame = 1
 playing = true
 
 [node name="WaterfallPart2" type="AnimatedSprite" parent="."]
 position = Vector2( 0, 24 )
 frames = SubResource( 5 )
+frame = 3
 playing = true
 
 [node name="WaterfallPart3" type="AnimatedSprite" parent="."]
 position = Vector2( 0, 48 )
 frames = SubResource( 5 )
+frame = 3
 playing = true
 
 [node name="WaterfallPart4" type="AnimatedSprite" parent="."]
@@ -93,16 +94,17 @@ playing = true
 [node name="WaterfallPart5" type="AnimatedSprite" parent="."]
 position = Vector2( 0, 96 )
 frames = SubResource( 5 )
-frame = 3
+frame = 2
 playing = true
 
 [node name="WaterfallEnd" type="AnimatedSprite" parent="."]
 position = Vector2( -4, 105 )
 frames = SubResource( 14 )
+frame = 7
 playing = true
 
 [node name="WaterfallEnd2" type="AnimatedSprite" parent="."]
 position = Vector2( 4, 105 )
 frames = SubResource( 14 )
-frame = 7
+frame = 6
 playing = true

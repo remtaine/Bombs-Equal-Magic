@@ -45,7 +45,7 @@ var throw_strength :float = 0.0
 var run_accel : int = 25
 var jump_speed : int = 100
 var ground_friction : int = 25
-var max_speed : int = 100
+var max_speed : int = 50
 var current_speed : Vector2 = Vector2(0, 0)
 
 var _state : String = "NONE"
@@ -155,10 +155,10 @@ func move():
 
 	if is_flipped:
 		crosshair_pivot.scale.x = -1
-		weapons.scale.x = -1
+#		weapons.scale.x = -1
 	else:
 		crosshair_pivot.scale.x = 1
-		weapons.scale.x = 1
+#		weapons.scale.x = 1
 		
 	current_speed.y += 3
 
@@ -172,7 +172,7 @@ func shoot():
 
 func update_health(dmg):
 	set_process(true)
-	tween.interpolate_property(self, "hp", hp, hp-dmg, 2.0, tween.TRANS_LINEAR, tween.EASE_IN)
+	tween.interpolate_property(self, "hp", hp, hp-dmg, 3.0, tween.TRANS_LINEAR, tween.EASE_IN)
 	tween.start()
 	
 	if hp > 0:
@@ -194,20 +194,30 @@ func enter_state():
 			
 		STATES.RUN:
 			sprite.set_animation("run")
-
 		STATES.IDLE:
 			sprite.set_animation("idle")
+		STATES.AIM:
+			_weapon = WEAPONS.BOMB
 		STATES.THROW:
 			arrow.value = 20
 		STATES.SHOOT:
-			#SPAWNING BOMB!
-			play_sound("launch")
+			spawn_weapon()
+			
+
+func spawn_weapon():
+	play_sound("launch")
+	match _weapon:
+		WEAPONS.BOMB:
 			var bomb = bomb_resource.instance()
 			bomb.setup(self, crosshair.global_position, crosshair.global_position - crosshair_pivot.global_position, arrow.value)
 			others_handler.add_child(bomb)
 	
 			crosshair_pivot.visible = false
 			arrow.value = 0
+		WEAPONS.SPEAR:
+			pass
+		WEAPONS.ORB:
+			pass
 
 func interpret_input():
 	match _phase:
@@ -226,9 +236,15 @@ func interpret_input():
 						crosshair_pivot.rotation_degrees -= 1
 					else:
 						crosshair_pivot.rotation_degrees += 1
-				elif Input.is_action_pressed("change_weapon_right"):
-					pass
-					#TODO change actively selected
+				elif Input.is_action_just_pressed("change_weapon_right"):
+					_weapon = (_weapon + 1) % weapons.get_child_count()
+					show_current_weapon()
+				elif Input.is_action_just_pressed("change_weapon_left"):
+					_weapon = (_weapon - 1) % weapons.get_child_count()
+					if _weapon < 0:
+						_weapon += weapons.get_child_count()
+					show_current_weapon()
+					
 			elif _state == STATES.THROW:
 				if Input.is_action_pressed("select"):
 					arrow.value += 1
@@ -253,6 +269,11 @@ func do_ai_stuff():
 					pass #TODO add aiming stuff
 			PHASES.MOVE:
 				pass #TODO add moving stuff
+
+func show_current_weapon():
+	for child in weapons.get_children():
+		child.visible = false
+	weapons.get_child(_weapon).visible = true
 	
 func bomb_exploded():
 	#TODO add timer before setting inactive

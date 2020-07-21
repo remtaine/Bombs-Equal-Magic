@@ -1,11 +1,11 @@
 extends Node2D
 onready var character_holder = $Characters
 func _input(event):
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel"): #esc
 		get_tree().quit()
-	if event.is_action_pressed("reset"):
+	if event.is_action_pressed("reset"): #R
 		get_tree().reload_current_scene()
-	if event.is_action_pressed("toggle_labels"):
+	if event.is_action_pressed("toggle_labels"): #T
 		for child in character_holder.get_children():
 			for label in child.get_node("Labels"):
 				label.toggle()
