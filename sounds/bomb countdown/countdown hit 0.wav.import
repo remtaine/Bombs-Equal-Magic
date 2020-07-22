@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/countdown hit 0.wav-ad1a3d703fa8725081d4e1f3af6c3457.sample"
+
+[deps]
+
+source_file="res://sounds/bomb countdown/countdown hit 0.wav"
+dest_files=[ "res://.import/countdown hit 0.wav-ad1a3d703fa8725081d4e1f3af6c3457.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

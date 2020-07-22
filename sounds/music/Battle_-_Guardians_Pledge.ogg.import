@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Battle_-_Guardians_Pledge.ogg-8713fc6c0175fe73656331de53ec0016.oggstr"
+
+[deps]
+
+source_file="res://sounds/music/Battle_-_Guardians_Pledge.ogg"
+dest_files=[ "res://.import/Battle_-_Guardians_Pledge.ogg-8713fc6c0175fe73656331de53ec0016.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

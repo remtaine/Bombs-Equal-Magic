@@ -6,7 +6,7 @@
 [ext_resource path="res://src/weapons/HeldWeapon.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/helpers/Label.gd" type="Script" id=8]
 [ext_resource path="res://images/crosshairs/arrowRight.png" type="Texture" id=9]
-[ext_resource path="res://fonts/Pixels TEXT.ttf" type="DynamicFontData" id=10]
+[ext_resource path="res://fonts/body text/Pixels TEXT.ttf" type="DynamicFontData" id=10]
 [ext_resource path="res://images/weapons/spear/spear.png" type="Texture" id=11]
 [ext_resource path="res://images/weapons/orb/orb_anim_strip_6.png" type="Texture" id=12]
 
@@ -29,8 +29,8 @@ script = ExtResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
-animation = "idle"
-frame = 3
+animation = "run"
+frame = 2
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -137,6 +137,13 @@ region_rect = Rect2( 40, 0, 8, 8 )
 
 [node name="LaunchAudio" type="AudioStreamPlayer2D" parent="Audio"]
 
+[node name="MovementAudio" type="AudioStreamPlayer2D" parent="Audio"]
+
+[node name="AimWeaponAudio" type="AudioStreamPlayer2D" parent="Audio"]
+
+[node name="SelectAudio" type="AudioStreamPlayer2D" parent="Audio"]
+
 [node name="Tween" type="Tween" parent="."]
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
 [connection signal="tween_all_completed" from="Tween" to="." method="_on_Tween_tween_all_completed"]

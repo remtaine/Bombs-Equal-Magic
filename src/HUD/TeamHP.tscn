@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://fonts/body text/Pixels TEXT.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://images/white square.png" type="Texture" id=2]
+[ext_resource path="res://src/HUD/TeamHP.gd" type="Script" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 1 )
+
+[node name="TeamHP" type="TextureProgress"]
+margin_left = 40.8447
+margin_top = 4.65637
+margin_right = 140.845
+margin_bottom = 104.656
+rect_scale = Vector2( 1, 0.1 )
+value = 50.0
+texture_under = ExtResource( 2 )
+texture_progress = ExtResource( 2 )
+tint_under = Color( 1, 1, 1, 0.588235 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TeamHPLabel" type="Label" parent="."]
+margin_left = -40.9244
+margin_top = -49.7532
+margin_right = -0.9244
+margin_bottom = -35.7532
+rect_scale = Vector2( 1, 10 )
+custom_fonts/font = SubResource( 1 )
+text = "Blue Team"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="."]

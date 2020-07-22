@@ -31,8 +31,29 @@ onready var sound_launch5 := preload("res://sounds/launches/Launch_5.wav")
 onready var sound_launch6 := preload("res://sounds/launches/Launch_6.wav")
 onready var sound_launch7 := preload("res://sounds/launches/Launch_7.wav")
 
+onready var movement_audio := $Audio/MovementAudio
+onready var sound_footsteps := preload("res://sounds/movement/footsteps.wav")
+onready var sound_jump := preload("res://sounds/movement/Jump.wav")
+onready var sound_land := preload("res://sounds/movement/land.wav")
+onready var sound_die := preload("res://sounds/hurt/death SFX_7.wav")
+
+onready var aim_weapon_audio := $Audio/AimWeaponAudio
+onready var sound_charge_attack := preload("res://sounds/aim weapon/charge_attack.wav")
+onready var sound_change_weapon := preload("res://sounds/aim weapon/change_weapon.wav")
+onready var sound_moving_aim := preload("res://sounds/aim weapon/moving aim.wav")
+onready var sound_hurt := preload("res://sounds/aim weapon/Hit_Hurt6.wav")
+
+onready var select_audio := $Audio/SelectAudio
+onready var sound_select := preload("res://sounds/select/Select.wav")
+onready var sound_deselect := preload("res://sounds/select/deselect.wav")
+
+#onready var xxx := xxx
+#onready var xxx := preload("")
+#onready var xxx := preload("")
+
 export var instance_name : String = "Mage"
-export var team : String = "Team 1"
+export var team : String = "Blue Team"
+export var sprite_type : String = "Mage"
 export var is_bot : bool = false
 
 var currently_selected = false
@@ -42,10 +63,10 @@ var hp = 100
 
 var throw_strength :float = 0.0
 
-var run_accel : int = 25
+var run_accel : int = 10
 var jump_speed : int = 100
-var ground_friction : int = 25
-var max_speed : int = 50
+var ground_friction : int = 10
+var max_speed : int = 30
 var current_speed : Vector2 = Vector2(0, 0)
 
 var _state : String = "NONE"
@@ -54,13 +75,9 @@ var _weapon = 0
 
 signal turn_done
 signal changed_leader(leader)
-
-var TEAMS = {
-	player1 = "Team 1",
-	player2 = "Team 2",
-	player3 = "Team 3",
-	player4 = "Team 4",
-}
+signal start_turn
+signal pause_timer
+signal took_damage(team, dmg)
 
 var WEAPONS = {
 	BOMB = 0,
@@ -102,12 +119,16 @@ func setup(o):
 
 func level_setup(o):
 	connect("changed_leader", o, "change_camera_leader")
-
+	connect("start_turn", o, "_on_start_turn")
+	connect("pause_timer", o, "_on_pause_timer")
+	connect("took_damage", o, "_on_take_damage")
+	
 func setup_sounds():
 	sound_launch_array = [sound_launch1]
 	#TODO add other array parts
 	
 func set_active():
+	emit_signal("start_turn")
 	currently_selected = true
 #	camera.current = true
 	set_physics_process(true)
@@ -179,33 +200,13 @@ func shoot():
 func update_health(dmg):
 	set_process(true)
 	sprite.set_animation("hurt")
+	emit_signal("took_damage", team, dmg)	
 	tween.interpolate_property(self, "hp", hp, hp-dmg, 2.5, tween.TRANS_LINEAR, tween.EASE_IN)
 	tween.start()
-		
-func enter_state():
-	match _state:
-		STATES.JUMP:
-			sprite.set_animation("jump_up")
-			var dust = dust_resource.instance()
-			dust.setup("jump", global_position)
-			others_handler.add_child(dust)
-
-			current_speed.y = -jump_speed
-			
-		STATES.RUN:
-			sprite.set_animation("run")
-		STATES.IDLE:
-			sprite.set_animation("idle")
-		STATES.AIM:
-			_weapon = WEAPONS.BOMB
-		STATES.THROW:
-			arrow.value = 20
-		STATES.SHOOT:
-			spawn_weapon()
-			
 
 func spawn_weapon():
 	play_sound("launch")
+	emit_signal("pause_timer")
 	match _weapon:
 		WEAPONS.BOMB:
 			var bomb = bomb_resource.instance()
@@ -213,6 +214,7 @@ func spawn_weapon():
 			others_handler.add_child(bomb)
 
 			emit_signal("changed_leader", bomb)
+			print("EMITTED BOMB SIGNAL!")
 			crosshair_pivot.visible = false
 			arrow.value = 0
 		WEAPONS.SPEAR:
@@ -225,6 +227,7 @@ func interpret_input():
 		PHASES.SHOOT:
 			if _state == STATES.AIM:
 				if Input.is_action_just_pressed("select"):
+					play_sound("charge attack")
 					change_state(STATES.THROW)
 #					crosshair_pivot.visible = false
 				elif Input.is_action_pressed("aim_up"):
@@ -240,15 +243,19 @@ func interpret_input():
 				elif Input.is_action_just_pressed("change_weapon_right"):
 					_weapon = (_weapon + 1) % weapons.get_child_count()
 					show_current_weapon()
+					play_sound("change weapon")
 				elif Input.is_action_just_pressed("change_weapon_left"):
 					_weapon = (_weapon - 1) % weapons.get_child_count()
 					if _weapon < 0:
 						_weapon += weapons.get_child_count()
 					show_current_weapon()
+					play_sound("change weapon")
 					
 			elif _state == STATES.THROW:
 				if Input.is_action_pressed("select"):
 					arrow.value += 1
+					if arrow.value >= 100:
+						change_state(STATES.SHOOT)
 				else:
 					change_state(STATES.SHOOT)
 		
@@ -285,10 +292,64 @@ func play_sound(sound):
 		"launch":
 			launch_audio.stream = sound_launch_array[0]
 			launch_audio.play()
+		"footsteps":
+			movement_audio.stream = sound_footsteps
+			movement_audio.play()
+		"jump":
+			movement_audio.stream = sound_jump
+			movement_audio.play()
+		"land":
+			movement_audio.stream = sound_land
+			movement_audio.play()
+		"die":
+			movement_audio.stream = sound_die
+			movement_audio.play()
+		"hurt":
+			aim_weapon_audio.stream = sound_hurt
+			aim_weapon_audio.play()
+		"change weapon":
+			aim_weapon_audio.stream = sound_change_weapon
+			aim_weapon_audio.play()
+		"charge attack":
+			aim_weapon_audio.stream = sound_charge_attack
+			aim_weapon_audio.play()
+		"moving aim":
+			aim_weapon_audio.stream = sound_moving_aim
+			aim_weapon_audio.play()
+		"select":
+			select_audio.stream = sound_select
+			select_audio.play()
+		"deselect":
+			select_audio.stream = sound_deselect
+			select_audio.play()
+func enter_state():
+	match _state:
+		STATES.JUMP:
+			play_sound("jump")
+			sprite.set_animation("jump_up")
+			var dust = dust_resource.instance()
+			dust.setup("jump", global_position)
+			others_handler.add_child(dust)
+
+			current_speed.y = -jump_speed
+#			current_speed.x = -jump_speed
+			
+		STATES.RUN:
+			sprite.set_animation("run")
+		STATES.IDLE:
+			sprite.set_animation("idle")
+		STATES.AIM:
+			_weapon = WEAPONS.BOMB
+		STATES.THROW:
+			arrow.value = 20
+		STATES.SHOOT:
+			aim_weapon_audio.stop()
+			spawn_weapon()
 
 func exit_state():
 	match _state:
 		STATES.JUMP:
+			play_sound("land")
 			var dust = dust_resource.instance()
 			dust.setup("land", global_position)
 			others_handler.add_child(dust)
@@ -324,6 +385,7 @@ func _on_Tween_tween_all_completed(): #only for health so far
 		sprite.set_animation("idle")
 		set_process(false)
 	else:
+		play_sound("die")
 		sprite.set_animation("die")
 
 
@@ -332,3 +394,13 @@ func _on_AnimatedSprite_animation_finished():
 		if currently_selected:
 			set_inactive()
 		queue_free() #TODO add to die list
+
+
+func _on_AnimatedSprite_frame_changed():
+	if sprite != null and sprite.animation == "run":
+		if sprite_type == "Mage":
+			if sprite.frame == 0 or sprite.frame == 3:
+				play_sound("footsteps")
+		elif sprite_type == "Mushroom":
+			if sprite.frame == 2 or sprite.frame == 6:
+				play_sound("footsteps")

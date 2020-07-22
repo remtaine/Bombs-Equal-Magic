@@ -2,6 +2,7 @@ class_name Weapon
 extends KinematicBody2D
 
 var velocity : Vector2 = Vector2.ZERO
+var max_velocity : Vector2 = Vector2.ZERO
 var speed : int = 300
 var strength : float = 0.0
 var direction : Vector2 = Vector2.ZERO
@@ -23,4 +24,5 @@ func setup(o, pos, dir, throw_strength): #throw strength is from 20 to 100, outp
 	strength = float(throw_strength/100)
 	position = to_local(pos)
 	velocity = speed * direction * strength
+	max_velocity = speed * direction
 	connect("finished_exploding", o, "bomb_exploded")

@@ -5,6 +5,7 @@
 
 [node name="Mushroom" instance=ExtResource( 4 )]
 instance_name = "Mushroom"
+team = "Red Team"
 
 [node name="AnimatedSprite" parent="." index="0"]
 frames = ExtResource( 1 )

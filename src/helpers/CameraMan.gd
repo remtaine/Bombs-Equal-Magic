@@ -16,15 +16,17 @@ func _physics_process(delta):
 		approach()
 
 func follow_leader():
-	if "camera_goal" in camera.leader:
-		goal = camera.leader.camera_goal
+	if "camera" in camera.leader:
+		goal = camera.leader.camera.global_position
 	else:
 		goal = camera.leader.global_position
 	
-		approach()
+	approach()
 		#TODO follow
 
 func approach():
-	if goal.distance_to(global_position) >= 10:
+	if goal.distance_to(global_position) >= 5 or not camera.current:
 		direction = (goal - global_position).normalized()
 		move_and_slide(direction * speed)
+	else:
+		camera.leader.camera.current = true

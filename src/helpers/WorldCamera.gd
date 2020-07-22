@@ -7,3 +7,4 @@ func _ready():
 
 func change_leader(f):
 	leader = f
+	current = true
