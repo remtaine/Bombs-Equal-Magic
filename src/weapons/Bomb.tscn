@@ -123,7 +123,7 @@ colors = PoolColorArray( 1, 1, 1, 0.784314, 1, 1, 1, 0 )
 gradient = SubResource( 25 )
 
 [sub_resource type="Curve" id=27]
-_data = [ Vector2( 0, 0.297297 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.220721 ), 0.0, 0.0, 0, 0 ]
+_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.992883, 0.498288 ), 0.0, 0.0, 0, 0 ]
 
 [sub_resource type="CurveTexture" id=28]
 curve = SubResource( 27 )
@@ -138,6 +138,7 @@ color_ramp = SubResource( 26 )
 
 [node name="Bomb" type="RigidBody2D"]
 position = Vector2( -0.302078, 0.67968 )
+collision_layer = 9
 physics_material_override = SubResource( 1 )
 contacts_reported = 1
 contact_monitor = true
@@ -157,12 +158,10 @@ playing = true
 [node name="CircleSprite" type="Sprite" parent="AnimatedSprite"]
 
 [node name="TooLongTimer" type="Timer" parent="."]
-wait_time = 3.0
 one_shot = true
 autostart = true
 
 [node name="ExplodeTimer" type="Timer" parent="."]
-wait_time = 3.0
 one_shot = true
 
 [node name="Hitbox" parent="." instance=ExtResource( 7 )]

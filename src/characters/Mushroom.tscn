@@ -25,6 +25,7 @@ font_data = ExtResource( 5 )
 [node name="Mushroom" type="KinematicBody2D" groups=[
 "characters",
 ]]
+collision_layer = 5
 script = ExtResource( 2 )
 instance_name = "Mushroom"
 team = "Red"
@@ -33,7 +34,6 @@ team_color = Color( 0.741176, 0.317647, 0.352941, 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
 animation = "run"
-frame = 3
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -89,7 +89,6 @@ script = ExtResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-is_on = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 0, -35.2228 )

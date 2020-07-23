@@ -15,8 +15,11 @@ onready var state_label := $Labels/StateLabel
 onready var hp_label := $Labels/HPLabel
 onready var name_label := $Labels/NameLabel
 
+var opposing_character
 onready var dust_resource := preload("res://src/effects/Dust.tscn")
 onready var bomb_resource := preload("res://src/weapons/Bomb.tscn")
+onready var orb_resource := preload("res://src/weapons/Orb.tscn")
+
 onready var others_handler := get_parent().get_parent().get_parent().get_node("Weapons")
 onready var weapons = $CrosshairPivot/Weapons
 onready var camera := $Camera2D
@@ -52,16 +55,20 @@ onready var sound_deselect := preload("res://sounds/select/deselect.wav")
 #onready var xxx := preload("")
 
 export var instance_name : String = "Mage"
-export var team : String = "Blue Team"
+export var team : String = "Blue"
 export var team_color := Color()
 export var sprite_type : String = "Mage"
 export var is_bot : bool = false
+
+var ai_planned_strength :int = 0
+var ai_planned_enemy
 
 var can_input : bool = false
 var currently_selected = false
 var is_flipped : bool = false
 
-var hp = 100
+var hp : int = 100
+var hp_shown : int = 100
 
 var throw_strength :float = 0.0
 
@@ -79,10 +86,12 @@ var is_on_floor : bool = true
 
 signal turn_done
 signal changed_leader(leader)
-signal start_turn
+
 signal pause_timer
 signal took_damage(team, dmg)
 signal panning
+
+signal did_terrain_damage(pos, radius)
 
 var WEAPONS = {
 	BOMB = 0,
@@ -123,20 +132,18 @@ func setup(o):
 
 func level_setup(o):
 	connect("changed_leader", o, "change_camera_leader")
-	connect("start_turn", o, "_on_start_turn")
 	connect("pause_timer", o, "_on_pause_timer")
 	connect("took_damage", o, "_on_take_damage")
 	connect("panning", o, "_on_panning")
+	connect("did_terrain_damage", o, "_on_terrain_damage")
 	
 func setup_sounds():
 	sound_launch_array = [sound_launch1]
 	#TODO add other array parts
 	
 func set_active():
-	emit_signal("start_turn")
 	currently_selected = true
 #	camera.current = true
-	can_input = true
 	print("I CAN INPUT NOW ", instance_name)
 	change_phase(PHASES.MOVE)
 	change_state(STATES.IDLE)
@@ -145,7 +152,6 @@ func set_inactive():
 	crosshair_pivot.rotation_degrees = 0
 	currently_selected = false
 	emit_signal("turn_done")
-	change_phase(PHASES.IDLE)
 	change_state(STATES.IDLE)
 	can_input = false
 
@@ -158,10 +164,10 @@ func _physics_process(delta):
 			shoot()
 	
 	current_speed.y += 3	
-	current_speed = move_and_slide(current_speed, Vector2.UP)
-	
+	current_speed = move_and_slide(current_speed, Vector2.UP, true, 4, 1.0472)
+
 func _process(delta):
-	hp_label.text = String(ceil(hp))
+	hp_label.text = String(ceil(hp_shown))
 	
 func move():
 	if not is_bot:
@@ -174,7 +180,6 @@ func move():
 #	print_debug("AM I ON FLOOR? ", is_on_floor)
 	match _state:
 		STATES.JUMP:
-			print("IM JUMPING")
 			if current_speed.y >= 0 and sprite.animation == "jump_up":
 				sprite.set_animation("jump_down")
 				#TODO add separate fall state
@@ -218,14 +223,14 @@ func update_health(dmg):
 	can_input = false
 	set_process(true)
 	sprite.set_animation("hurt")
-	var temp = max(0, hp-dmg)
-	emit_signal("took_damage", team, dmg)	
-	tween.interpolate_property(self, "hp", hp, temp, 2.5, tween.TRANS_LINEAR, tween.EASE_IN)
+	emit_signal("took_damage", team, min(hp, dmg))	
+	hp = max(0, hp - dmg)
+	tween.interpolate_property(self, "hp_shown", hp_shown, hp, 2.0, tween.TRANS_LINEAR, tween.EASE_IN)
 	tween.start()
 
 func spawn_weapon():
 	play_sound("launch")
-	emit_signal("pause_timer")
+
 	match _weapon:
 		WEAPONS.BOMB:
 			var bomb = bomb_resource.instance()
@@ -233,20 +238,24 @@ func spawn_weapon():
 			others_handler.add_child(bomb)
 
 			emit_signal("changed_leader", bomb)
-			print("EMITTED BOMB SIGNAL!")
 			crosshair_pivot.visible = false
 			arrow.value = 0
 		WEAPONS.SPEAR:
 			pass
 		WEAPONS.ORB:
-			pass
+			var orb = orb_resource.instance()
+			orb.setup(self, crosshair.global_position, crosshair.global_position - crosshair_pivot.global_position, arrow.value)
+			others_handler.add_child(orb)
+
+			emit_signal("changed_leader", orb)
+			crosshair_pivot.visible = false
+			arrow.value = 0
 
 func interpret_input():
 	match _phase:
 		PHASES.SHOOT:
 			if _state == STATES.AIM:
 				if Input.is_action_just_pressed("select"):
-					play_sound("charge attack")
 					change_state(STATES.THROW)
 #					crosshair_pivot.visible = false
 				elif Input.is_action_pressed("aim_down") or Input.is_action_pressed("aim_up"):
@@ -262,7 +271,6 @@ func interpret_input():
 							crosshair_pivot.rotation_degrees += 1
 	
 					crosshair_pivot.rotation_degrees = clamp(crosshair_pivot.rotation_degrees, -90, 90)
-					print("CROSSHAIR ANGLE IS ", crosshair_pivot.rotation_degrees)
 					
 				elif Input.is_action_just_pressed("change_weapon_right"):
 					_weapon = (_weapon + 1) % weapons.get_child_count()
@@ -289,7 +297,7 @@ func interpret_input():
 				can_input = false
 				change_state(STATES.IDLE)
 				return
-			if Input.is_action_just_pressed("select") and current_speed == Vector2.ZERO:
+			if Input.is_action_just_pressed("select") and _state == STATES.IDLE:
 				change_phase(PHASES.SHOOT)
 				return
 			elif (Input.is_action_just_pressed("jump") and is_on_floor) or _state == STATES.JUMP:
@@ -302,10 +310,43 @@ func interpret_input():
 func do_ai_stuff():
 		match _phase:
 			PHASES.SHOOT:
-				if _state == STATES.AIM:
-					pass #TODO add aiming stuff
+				match _state:
+					STATES.AIM:
+						#DONE? change to orb
+						while _weapon != 2:
+							simulate_button_press("change_weapon_right")
+						#DONE? aim at enemy
+						var x = global_position.angle_to(ai_planned_enemy.global_position)
+						if x > crosshair_pivot.rotation_degrees:
+							while x > crosshair_pivot.rotation_degrees:
+								Input.action_press("aim_up")
+							Input.action_release("aim_up")
+						elif x < crosshair_pivot.rotation_degrees:
+							while x < crosshair_pivot.rotation_degrees:
+								Input.action_press("aim_down")
+							Input.action_release("aim_down")
+						Input.action_press("select")
+					STATES.THROW:
+						#DONE? charge strength to ai_planned_strength
+						if arrow.value >= ai_planned_strength:
+							Input.action_release("select")
 			PHASES.MOVE:
-				pass #TODO add moving stuff
+				yield(get_tree().create_timer(2.0), "timeout")
+				#TODO choose closest enemy
+				
+				#DONE? face enemy
+				if ai_planned_enemy.global_position.x > global_position.x: #ie should face right
+					simulate_button_press("move_right")
+				elif ai_planned_enemy.global_position.x < global_position.x: #ie should face left
+					simulate_button_press("move_left")					
+				#TODO plan ai_strength
+				change_phase(PHASES.SHOOT)	
+				yield(get_tree().create_timer(0.5), "timeout")
+
+func simulate_button_press(action):
+	Input.action_press(action)
+	yield(get_tree().create_timer(1.0), "timeout")
+	Input.action_release(action)
 
 func show_current_weapon():
 	for child in weapons.get_children():
@@ -368,9 +409,12 @@ func enter_state():
 			sprite.set_animation("run")
 		STATES.IDLE:
 			sprite.set_animation("idle")
+			current_speed.x = 0
 		STATES.AIM:
 			_weapon = WEAPONS.BOMB
 		STATES.THROW:
+			play_sound("charge attack")
+			emit_signal("pause_timer")
 			arrow.value = 20
 		STATES.SHOOT:
 			aim_weapon_audio.stop()
@@ -413,6 +457,9 @@ func change_phase(phase):
 		exit_phase()
 		_phase = phase
 		enter_phase()
+
+func _on_terrain_damage(pos, radius):
+	emit_signal("did_terrain_damage", pos, radius)
 
 func _on_Tween_tween_all_completed(): #only for health so far
 	if hp > 0:

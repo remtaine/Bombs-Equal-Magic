@@ -1,37 +1,33 @@
+class_name DestructibleTerrain
+
 extends Node2D
 
-export var viewport_destruction_nodepath : NodePath
+var world_size : Vector2
 
-var world_size : Vector2 = Vector2.ZERO
-
-var _to_cull : Array = []
+var _to_cull : Array
 
 var _image_republish_texture := ImageTexture.new()
 
 var _parent_material : Material
-var _destruction_threads : Array = []
-var _viewport_destruction_node : Node
-
-onready var viewport := $Viewport
-onready var culltimer := $CullTimer
-onready var sprite := $Sprite
-onready var terrain_sprite := get_parent()
+var _destruction_threads := Array()
 onready var collision_holder := $CollisionHolder
+onready var _viewport_destruction_node := $Viewport/Circle
+onready var viewport := $Viewport
+onready var stage_sprite := get_parent()
+onready var cull_timer := $CullTimer
 
 func _ready():
-	terrain_sprite.add_to_group("destructibles")
-	#TODO check what changed with change group
+	add_to_group("destructibles")
 	
-	world_size = (terrain_sprite as Sprite).get_rect().size
-	_parent_material = terrain_sprite.material
-	_viewport_destruction_node = get_node(viewport_destruction_nodepath)
+	world_size = (get_parent() as Sprite).get_rect().size
+	_parent_material = get_parent().material
 	
 	# Set our viewport size. We don't know this until run time, since its from our parent.
 	viewport.set_size(world_size)
 	
 	# Passing 0 to duplicate, as we don't want to duplicate scripts/signals etc
 	# We don't use 8 since we're going to delete our duplicate nodes after first render anyway
-	var dup = terrain_sprite.duplicate(0) as Node2D
+	var dup = stage_sprite.duplicate(0) as Node2D
 	_to_cull.append(dup)
 	
 	# Then reposition, so we're in the right spot
@@ -41,7 +37,7 @@ func _ready():
 	viewport.add_child(dup)
 	
 	# Start the timer, so it can delete our duplicated parent info
-	culltimer.start()
+	cull_timer.start()
 	
 	# Wait for all viewports to re-render before we build our image
 	yield(VisualServer, "frame_post_draw")
@@ -57,9 +53,8 @@ func _unhandled_input(event):
 	if (event.is_action_pressed("ui_accept")):
 		# DEBUG:
 		var bitmap := BitMap.new()
-		bitmap.create_from_image_alpha(sprite.texture.get_data())
-		sprite.get_texture().get_data().save_png("res://screenshots/debug" + get_parent().name + ".png")
-
+		bitmap.create_from_image_alpha($Sprite.texture.get_data())
+		$Sprite.get_texture().get_data().save_png("res://screenshots/debug" + get_parent().name + ".png")
 
 func destroy(position : Vector2, radius : float):
 	# Collision rebuild thread!
@@ -82,7 +77,7 @@ func destroy(position : Vector2, radius : float):
 func _cull_foreground_duplicates():
 	for dup in _to_cull:
 		dup.queue_free()
-	_to_cull = []
+	_to_cull = Array()
 
 
 func rebuild_texture():
@@ -99,7 +94,7 @@ func rebuild_collisions_from_geometry(arguments : Array):
 	# We need to do this because the collision polygon coordinates are only available in local space
 	position = position - global_position
 
-	var nb_points = 8
+	var nb_points = 18
 	var points_arc = PoolVector2Array()
 	points_arc.push_back(position)
 
@@ -147,7 +142,7 @@ func rebuild_collisions_from_geometry(arguments : Array):
 func build_collisions_from_image():	
 	# Create bitmap from the Viewport (which projects into our sprite)
 	var bitmap := BitMap.new()
-	bitmap.create_from_image_alpha(sprite.texture.get_data())
+	bitmap.create_from_image_alpha($Sprite.texture.get_data())
 	
 	# DEBUG:
 	#$Sprite.get_texture().get_data().save_png("res://screenshots/debug" + get_parent().name + ".png")
@@ -163,7 +158,7 @@ func build_collisions_from_image():
 		var collider := CollisionPolygon2D.new()
 
 		# Remap our points from the viewport coordinates back to world coordinates.
-		var newpoints : Array = []
+		var newpoints := Array()
 		for point in polygon:
 			newpoints.push_back(_viewport_to_world(point))
 		collider.polygon = newpoints
@@ -172,7 +167,7 @@ func build_collisions_from_image():
 
 func republish_sprite() -> void:
 	# Assume the image has changed, so we'll need to update our ImageTexture
-	_image_republish_texture.create_from_image(sprite.texture.get_data())
+	_image_republish_texture.create_from_image($Sprite.texture.get_data())
 
 	# If our parent has the proper src/destruction/parent_material shader
 	# We can set our destruction_mask parameter against it, 
@@ -182,7 +177,7 @@ func republish_sprite() -> void:
 
 
 func _viewport_to_world(var point : Vector2) -> Vector2:
-	var dynamic_texture_size = viewport.get_size()
+	var dynamic_texture_size = $Viewport.get_size()
 	return Vector2(
 		((point.x + get_viewport_rect().position.x) / dynamic_texture_size.x) * world_size.x,
 		((point.y + get_viewport_rect().position.y) / dynamic_texture_size.y) * world_size.y
@@ -190,9 +185,123 @@ func _viewport_to_world(var point : Vector2) -> Vector2:
 
 
 func _world_to_viewport(var point : Vector2) -> Vector2:
-	var dynamic_texture_size = viewport.get_size()
-	var parent_offset = terrain_sprite.position
+	var dynamic_texture_size = $Viewport.get_size()
+	var parent_offset = get_parent().position
 	return Vector2(
 		((point.x - parent_offset.x ) / world_size.x) * dynamic_texture_size.x + get_viewport_rect().position.x,
 		((point.y - parent_offset.y ) / world_size.y) * dynamic_texture_size.y + get_viewport_rect().position.y
 	)
+
+#extends Node2D
+#
+#onready var parent_sprite = get_parent()
+#export var image_path = "res://images/bitmap/2020-07-21 Map v2.png"
+#
+#onready var cull_timer = $CullTimer
+#onready var collision_holder = $CollisionHolder
+#onready var viewport = $Viewport #destruction
+#onready var circle_remover = $Viewport/Circle
+#
+#var _image_republish_texture := ImageTexture.new()
+#var _parent_material
+#var world_size : Vector2
+#
+#var _to_cull : Array = []
+#
+#func _ready():
+#	add_to_group("destructibles")
+#
+#	world_size = (parent_sprite as Sprite).get_rect().size
+#	_parent_material = parent_sprite.material
+#
+#	viewport.set_size(world_size)
+#
+#	var dup = parent_sprite.duplicate(0) as Node2D
+#	_to_cull.append(dup)
+#
+#	#DID NOT DO WORLD TO VIEWPORT! NOT NEEDED
+#
+#	viewport.add_child(dup)
+#
+#	cull_timer.start()
+#
+#	yield(VisualServer, "frame_post_draw") #once all viewports are updated
+#
+#	build_collision_from_image()
+#
+#func build_collision_from_image():
+##	var image = Image.new()
+##	image.load(image_path) #THIS WILL BE EDITED IN THE FUTURE! WILL GRAB IMAGE DATA FROM SPRITE (WHICH COMES FROM VIEWPORT)
+#
+#	var bitmap = BitMap.new()
+##	bitmap.create_from_image_alpha(image)
+#	bitmap.create_from_image_alpha(parent_sprite.texture.get_data())
+#
+#	var polygons = bitmap.opaque_to_polygons(Rect2(Vector2(0, 0), bitmap.get_size()))
+#
+#	for polygon in polygons:
+#		var collider = CollisionPolygon2D.new()
+#		collider.polygon = polygon
+#		collision_holder.add_child(collider)
+#
+#func destroy(pos, radius):
+#	#TODO add threads and shit
+#	create_terrain_damage(pos, radius)
+##	circle_remover.reposition(pos, radius)
+#
+##	rebuild_texture()
+#	yield(VisualServer, "frame_post_draw") #once all viewports are updated
+#	republish_sprite()
+#
+#func rebuild_texture():
+#	# Force re-render to update our target viewport
+#	viewport.render_target_update_mode = Viewport.UPDATE_ONCE
+#
+#func republish_sprite():
+#	_image_republish_texture.create_from_image($Sprite.texture.get_data())
+#	if _parent_material != null:
+#		_parent_material.set_shader_param("destruction_mask", _image_republish_texture)
+#
+#func create_terrain_damage(pos, radius):
+#	#TODO do relative to global_position
+#	print("POS AND GLOBAL IS ", position, " ", global_position)
+#	print("TERRAIN DAMAGE DATA ", pos, " ", radius)
+#
+#	pos -= global_position
+#
+#	var edge_points_num = 36
+#	var explosion_points = PoolVector2Array() #like an array but only for Vector2
+#	explosion_points.push_back(pos)
+#
+#	for i in range(edge_points_num + 1):
+#		var angle_point = deg2rad(i * 360/edge_points_num)
+#		explosion_points.push_back(pos + Vector2(cos(angle_point), sin(angle_point)) * radius)
+#
+#	for collision_polygon in collision_holder.get_children():
+#		var clipped_polygons = Geometry.clip_polygons_2d(collision_polygon.polygon, explosion_points)
+#
+#		if clipped_polygons.size() == 0:
+#			collision_polygon.queue_free()
+#		else:
+#			for i in range (clipped_polygons.size()):
+#				var clipped_collision = clipped_polygons[i]
+#
+#				if clipped_collision.size() < 3: #only 2 or less points in the polygon with removed collision
+#					continue 
+#
+#				var points = PoolVector2Array()
+#				for point in clipped_collision:
+#					points.push_back(point)
+#
+#				if i == 0:	
+#					collision_polygon.call_deferred("set", "polygon", points)
+#				else:
+#					var collider := CollisionPolygon2D.new()
+#					collider.polygon = points
+#					collision_holder.call_deferred("add_child", collider)
+#
+#
+#func _on_CullTimer_timeout():
+#	for dup in _to_cull:
+#		dup.queue_free()
+#	_to_cull = []

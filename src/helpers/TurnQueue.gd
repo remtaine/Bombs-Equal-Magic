@@ -32,6 +32,22 @@ func setup(o):
 func set_active_character(child):
 	active_character = child
 #	turn_label.text = "Turn: " + active_character.team
+	if active_character.is_bot:
+		var opposing_team
+		var opposing_character = null
+		match active_character.team:
+			"Blue":
+				#look for opposing in red
+				opposing_team = $RedTeam
+			"Red":
+				#look for opposing in blue
+				opposing_team = $BlueTeam
+		for child in opposing_team:
+			if opposing_character == null:
+				opposing_character = child
+			elif opposing_character.global_position
+		active_character.opposing_character = opposing_character
+		#TODO look for closest enemy and put in opposing_character
 	child.set_active()
 	
 func choose_next_active_character():
@@ -51,6 +67,5 @@ func choose_next_active_character():
 			active_character.set_physics_process(false)
 
 func set_next_active_character():
-	print("FOLLOWING LEADER")
 	emit_signal("changed_leader", get_child(active_team_index).get_child(active_character_indices[active_team_index]))
 	set_active_character(get_child(active_team_index).get_child(active_character_indices[active_team_index]))

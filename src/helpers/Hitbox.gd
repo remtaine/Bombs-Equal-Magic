@@ -11,22 +11,30 @@ var max_dist : int = 0
 var does_recoil : bool = false
 var recoil_strength : int = 0
 
+var terrain_damage : bool = false
+
 var owned_by = null
 var damage : int = 0
+
 onready var collision_shape := $CollisionShape2D
+
+signal did_terrain_damage(position, radius)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	deactivate()
 
-func setup(o, d = false, m = 0, r = false, rs = 0):
+func setup(o, d = false, m = 0, t_d = false, r = false, rs = 0):
 	owned_by = o
 	damage = o.damage
 	dist_scaled = d
 	max_dist = m
+	terrain_damage = t_d
 	does_recoil = r
 	recoil_strength = rs
-	
+	connect("did_terrain_damage", o, "_on_terrain_damage")
+	print("TERRAIN DAMAGE IS ", terrain_damage)
+
 func activate():
 	collision_shape.disabled = false
 	
@@ -42,13 +50,17 @@ func _on_Hitbox_body_entered(body):
 			print("DIST FROM ", body.instance_name, " IS ", dist_to)
 			
 			var x = min(1.0, float((y + 8)/max_dist))			
-			x = ceil(damage * (0.7 + (0.3 * x)))
+			x = ceil(damage * (0.6 + (0.4 * x)))
 			print("DAMAGE IS ", x)
 			body.update_health(x)
 		else:
 			print(damage)
 			body.update_health(damage)
 		
+	if terrain_damage:
+		emit_signal("did_terrain_damage", global_position, max_dist)
+			#TODO add terrain damage
+			
 #		if does_recoil and recoil_strength != 0:
 #			var v = recoil_strength * (body.global_position - owned_by.global_position).normalized()
 #			body.current_speed = Vector2(v.x, -5-abs(v.y) )

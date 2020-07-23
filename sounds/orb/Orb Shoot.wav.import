@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/Orb Shoot.wav-c224cc5d591aa78e22be5d4e761f0dbc.sample"
+
+[deps]
+
+source_file="res://sounds/orb/Orb Shoot.wav"
+dest_files=[ "res://.import/Orb Shoot.wav-c224cc5d591aa78e22be5d4e761f0dbc.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

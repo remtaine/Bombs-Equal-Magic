@@ -18,6 +18,8 @@ onready var label := $Labels/TimerLabel
 onready var hitbox := $Hitbox
 onready var stream_particles := $StreamParticles
 
+signal did_terrain_damage(pos, radius)
+
 func ready():
 	pass
 	
@@ -30,3 +32,7 @@ func setup(o, pos, dir, throw_strength): #throw strength is from 20 to 100, outp
 	max_velocity = speed * direction
 	connect("finished_exploding", o, "bomb_exploded")
 	apply_central_impulse(velocity)
+	connect("did_terrain_damage", o, "_on_terrain_damage")
+
+func _on_terrain_damage(pos, radius):
+	emit_signal("did_terrain_damage", pos, radius)

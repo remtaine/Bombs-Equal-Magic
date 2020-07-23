@@ -6,6 +6,7 @@ onready var world_camera_man = $CameraMan
 onready var world_camera = $CameraMan/WorldCamera
 onready var turn_queue = $Characters
 
+onready var stage_sprite = $Stage
 
 onready var blue_team_hp = $HUD/Control/BlueTeamHP
 onready var red_team_hp = $HUD/Control/RedTeamHP
@@ -23,6 +24,7 @@ func _ready():
 	reset_hp(blue_team_hp)
 	reset_hp(red_team_hp)
 	
+	world_camera_man.setup(self)
 	turn_queue.setup(self)
 	for blue_child in turn_queue.get_child(0).get_children():
 		blue_child.level_setup(self)
@@ -33,8 +35,8 @@ func _ready():
 	
 
 func _input(event):
-	if event.is_action_pressed("ui_cancel"): #esc
-		get_tree().quit()
+#	if event.is_action_pressed("ui_cancel"): #esc
+#		get_tree().quit()
 	if event.is_action_pressed("reset"): #R
 		get_tree().reload_current_scene()
 	if event.is_action_pressed("go_to_menu"): #R
@@ -89,3 +91,6 @@ func add_team_hp(team_hp, add):
 func reset_hp(team_hp):
 	team_hp.max_value = 0
 	team_hp.value = 0
+
+func _on_terrain_damage(pos, radius):
+	stage_sprite.destroy(pos, radius)
