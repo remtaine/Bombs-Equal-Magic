@@ -32,7 +32,7 @@ team_color = Color( 0.403922, 0.560784, 0.796078, 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
 animation = "run"
-frame = 1
+frame = 5
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -145,6 +145,12 @@ region_rect = Rect2( 40, 0, 8, 8 )
 [node name="SelectAudio" type="AudioStreamPlayer2D" parent="Audio"]
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="AITimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+autostart = true
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
 [connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
 [connection signal="tween_all_completed" from="Tween" to="." method="_on_Tween_tween_all_completed"]
+[connection signal="timeout" from="AITimer" to="." method="_on_AITimer_timeout"]

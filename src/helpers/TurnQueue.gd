@@ -43,7 +43,7 @@ func set_active_character(child):
 				#look for opposing in blue
 				opposing_team = $BlueTeam
 		for child in opposing_team.get_children():
-			if opposing_character == null:# or child.global_position.distance_to(active_character.global_position) < opposing_character.global_position.distance_to(active_character.global_position):
+			if opposing_character == null or child.global_position.distance_to(active_character.global_position) < opposing_character.global_position.distance_to(active_character.global_position):
 				opposing_character = child
 
 		active_character.opposing_character = opposing_character
