@@ -3,6 +3,7 @@ extends Weapon
 
 signal finished_exploding
 
+export var instance_name = "Bomby"
 var ground_friction : int = 5
 #dist of 0-3 = 100%
 #dist of 4-6 = 75%
@@ -28,49 +29,48 @@ onready var sound_bounce := preload("res://sounds/bomb countdown/bomb bounce2.wa
 
 var has_played_bounce : bool = false
 
-func _ready():
-	set_process(false)
-	speed = 300
-	damage = 100
-	knockback = 25
-	max_distance = 12
+func _init():
+	speed = 500
+	damage = 50
+	knockback = 100
+	max_distance = 36
 	
+func _ready():	
 	sprite.offset.y = 0
+	mode = RigidBody2D.MODE_CHARACTER
 	
 	sprite.set_animation("ready")
-	hitbox.setup(self)
+	hitbox.setup(self, true, max_distance, true, knockback)
 	stream_particles.visible = true
 	setup_sounds()
-
+	set_process(false)
+		
 func setup_sounds():
 	sound_explosion_array = [sound_explosion1]
 
 func _physics_process(delta):
+#	if hitbox.collision_shape.disabled:
+#		print_debug("hitbox disabled")
+#	else:
+#		print_debug("hitbox IS ENABLED")	
 	if sprite.animation != "explode":
 		velocity.y += 3
-		velocity = move_and_slide(velocity,Vector2.UP)
+#		velocity = move_and_slide(velocity,Vector2.UP) #CHANGE
 	
-	if is_on_floor():
-		if timer.is_stopped() and sprite.animation == "ready":
-			timer.start()
+#	if is_on_floor():
+#		if timer.is_stopped() and sprite.animation == "ready":
+#			timer.start()
 #		if velocity.x < 0:
 #			velocity.x = max(0, abs(velocity.x) - ground_friction)
 #			velocity.x *= -1
 #		else:
 #			velocity.x = max(0, abs(velocity.x) - ground_friction)
 	
-	if get_slide_count() > 0:
+	if get_colliding_bodies().size() > 0:
 		if not has_played_bounce:
 			play_sound("bounce")
 			has_played_bounce = true
-		
-		var collision = get_slide_collision(0)
-		if collision != null:
-			direction = direction.bounce(collision.normal) # do ball bounce
-			strength *= 0.7
-			velocity = speed * direction * strength
-			if strength <= 0.05:
-				strength = 0
+			
 	else:
 		has_played_bounce = false
 		
@@ -91,13 +91,14 @@ func _on_ExplodeTimer_timeout():
 	label.text = ""
 	
 func _on_AnimatedSprite_animation_finished():
-	if sprite.animation == "go":
+	if sprite.animation == "go": #time to explode!
+		mode = RigidBody2D.MODE_STATIC
 		stream_particles.visible = false
 		#add screenshake
 		play_sound("explode")
 		sprite.set_animation("explode")
 #		sprite.offset.y = -12
-		scale *= 2
+		sprite.scale *= 2
 		camera.position.y +=2
 		#TODO add screenshake!!!
 		

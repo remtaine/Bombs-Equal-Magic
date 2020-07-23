@@ -1,5 +1,5 @@
 class_name Weapon
-extends KinematicBody2D
+extends RigidBody2D #TODO REVERT TO KinematicBody2D
 
 var velocity : Vector2 = Vector2.ZERO
 var max_velocity : Vector2 = Vector2.ZERO
@@ -18,6 +18,9 @@ onready var label := $Labels/TimerLabel
 onready var hitbox := $Hitbox
 onready var stream_particles := $StreamParticles
 
+func ready():
+	pass
+	
 func setup(o, pos, dir, throw_strength): #throw strength is from 20 to 100, output should be 100 to 300
 	owned_by = o
 	direction = dir.normalized()
@@ -26,3 +29,4 @@ func setup(o, pos, dir, throw_strength): #throw strength is from 20 to 100, outp
 	velocity = speed * direction * strength
 	max_velocity = speed * direction
 	connect("finished_exploding", o, "bomb_exploded")
+	apply_central_impulse(velocity)

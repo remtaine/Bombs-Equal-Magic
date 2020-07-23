@@ -1,5 +1,5 @@
 class_name Mage
-extends Character
+extends KinematicBody2D
 
 const GRAVITY = 3
 
@@ -53,9 +53,11 @@ onready var sound_deselect := preload("res://sounds/select/deselect.wav")
 
 export var instance_name : String = "Mage"
 export var team : String = "Blue Team"
+export var team_color := Color()
 export var sprite_type : String = "Mage"
 export var is_bot : bool = false
 
+var can_input : bool = false
 var currently_selected = false
 var is_flipped : bool = false
 
@@ -66,18 +68,21 @@ var throw_strength :float = 0.0
 var run_accel : int = 10
 var jump_speed : int = 100
 var ground_friction : int = 10
-var max_speed : int = 30
+var max_speed : int = 20
 var current_speed : Vector2 = Vector2(0, 0)
 
 var _state : String = "NONE"
 var _phase : String = "NONE"
 var _weapon = 0
 
+var is_on_floor : bool = true
+
 signal turn_done
 signal changed_leader(leader)
 signal start_turn
 signal pause_timer
 signal took_damage(team, dmg)
+signal panning
 
 var WEAPONS = {
 	BOMB = 0,
@@ -107,7 +112,6 @@ func _ready():
 	set_process(false)
 	change_phase(PHASES.IDLE)
 	change_state(STATES.IDLE)
-	set_physics_process(false)
 	crosshair_pivot.visible = false
 	
 	name_label.text = instance_name
@@ -122,6 +126,7 @@ func level_setup(o):
 	connect("start_turn", o, "_on_start_turn")
 	connect("pause_timer", o, "_on_pause_timer")
 	connect("took_damage", o, "_on_take_damage")
+	connect("panning", o, "_on_panning")
 	
 func setup_sounds():
 	sound_launch_array = [sound_launch1]
@@ -131,38 +136,50 @@ func set_active():
 	emit_signal("start_turn")
 	currently_selected = true
 #	camera.current = true
-	set_physics_process(true)
+	can_input = true
+	print("I CAN INPUT NOW ", instance_name)
 	change_phase(PHASES.MOVE)
 	change_state(STATES.IDLE)
 	
 func set_inactive():
+	crosshair_pivot.rotation_degrees = 0
 	currently_selected = false
 	emit_signal("turn_done")
 	change_phase(PHASES.IDLE)
 	change_state(STATES.IDLE)
-	set_physics_process(false)
+	can_input = false
 
+#TODO remove integrateforces, return physics process
 func _physics_process(delta):
 	match _phase:
 		PHASES.MOVE:
 			move()
 		PHASES.SHOOT:
 			shoot()
-
+	
+	current_speed.y += 3	
+	current_speed = move_and_slide(current_speed, Vector2.UP)
+	
 func _process(delta):
 	hp_label.text = String(ceil(hp))
 	
 func move():
 	if not is_bot:
-		interpret_input()
+		if can_input:
+			interpret_input()
 	else:
 		do_ai_stuff()
-		
+	
+#	is_on_floor = state.get_contact_count() > 0 and int(state.get_contact_collider_position(0).y) >= int(global_position.y)
+#	print_debug("AM I ON FLOOR? ", is_on_floor)
 	match _state:
 		STATES.JUMP:
-			if current_speed.y > 0 and sprite.animation == "jump_up":
+			print("IM JUMPING")
+			if current_speed.y >= 0 and sprite.animation == "jump_up":
 				sprite.set_animation("jump_down")
-			if is_on_floor():
+				#TODO add separate fall state
+			if is_on_floor() and sprite.animation == "jump_down":
+				print("TURNED IDLE")
 				change_state(STATES.IDLE)
 		
 		STATES.RUN:
@@ -174,34 +191,36 @@ func move():
 				is_flipped = true
 			elif Input.is_action_pressed("move_right"):
 				sprite.flip_h = false
-				is_flipped = false			
-
+				is_flipped = false
+			
+			
+#				state.linear_velocity.x = -current_speed.x
+#				state.linear_velocity.x = current_speed.x
 		STATES.IDLE:
 			if current_speed.x != 0:
 				current_speed.x = max(0, current_speed.x - ground_friction) 
-
+	
 	if is_flipped:
 		crosshair_pivot.scale.x = -1
 #		weapons.scale.x = -1
 	else:
 		crosshair_pivot.scale.x = 1
 #		weapons.scale.x = 1
-		
-	current_speed.y += 3
-
-	current_speed = move_and_slide(current_speed, Vector2.UP)
 
 func shoot():
 	if not is_bot:
-		interpret_input()
+		if can_input:
+			interpret_input()
 	else:
 		do_ai_stuff()
 
 func update_health(dmg):
+	can_input = false
 	set_process(true)
 	sprite.set_animation("hurt")
+	var temp = max(0, hp-dmg)
 	emit_signal("took_damage", team, dmg)	
-	tween.interpolate_property(self, "hp", hp, hp-dmg, 2.5, tween.TRANS_LINEAR, tween.EASE_IN)
+	tween.interpolate_property(self, "hp", hp, temp, 2.5, tween.TRANS_LINEAR, tween.EASE_IN)
 	tween.start()
 
 func spawn_weapon():
@@ -230,16 +249,21 @@ func interpret_input():
 					play_sound("charge attack")
 					change_state(STATES.THROW)
 #					crosshair_pivot.visible = false
-				elif Input.is_action_pressed("aim_up"):
-					if is_flipped:
-						crosshair_pivot.rotation_degrees += 1
-					else:
-						crosshair_pivot.rotation_degrees -= 1
-				elif Input.is_action_pressed("aim_down"):
-					if is_flipped:
-						crosshair_pivot.rotation_degrees -= 1
-					else:
-						crosshair_pivot.rotation_degrees += 1
+				elif Input.is_action_pressed("aim_down") or Input.is_action_pressed("aim_up"):
+					if Input.is_action_pressed("aim_up"):
+						if is_flipped:
+							crosshair_pivot.rotation_degrees += 1
+						else:
+							crosshair_pivot.rotation_degrees -= 1
+					elif Input.is_action_pressed("aim_down"):
+						if is_flipped:
+							crosshair_pivot.rotation_degrees -= 1
+						else:
+							crosshair_pivot.rotation_degrees += 1
+	
+					crosshair_pivot.rotation_degrees = clamp(crosshair_pivot.rotation_degrees, -90, 90)
+					print("CROSSHAIR ANGLE IS ", crosshair_pivot.rotation_degrees)
+					
 				elif Input.is_action_just_pressed("change_weapon_right"):
 					_weapon = (_weapon + 1) % weapons.get_child_count()
 					show_current_weapon()
@@ -260,12 +284,17 @@ func interpret_input():
 					change_state(STATES.SHOOT)
 		
 		PHASES.MOVE:
+			if Input.is_action_pressed("panning"):
+				emit_signal("panning")
+				can_input = false
+				change_state(STATES.IDLE)
+				return
 			if Input.is_action_just_pressed("select") and current_speed == Vector2.ZERO:
 				change_phase(PHASES.SHOOT)
 				return
-			elif Input.is_action_pressed("jump") or _state == STATES.JUMP:
+			elif (Input.is_action_just_pressed("jump") and is_on_floor) or _state == STATES.JUMP:
 				change_state(STATES.JUMP)
-			elif Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right"):
+			elif (Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right")) and is_on_floor:
 				change_state(STATES.RUN)
 			else:
 				change_state(STATES.IDLE)
@@ -331,6 +360,7 @@ func enter_state():
 			dust.setup("jump", global_position)
 			others_handler.add_child(dust)
 
+#			apply_central_impulse(Vector2.UP * jump_speed)
 			current_speed.y = -jump_speed
 #			current_speed.x = -jump_speed
 			
@@ -345,7 +375,11 @@ func enter_state():
 		STATES.SHOOT:
 			aim_weapon_audio.stop()
 			spawn_weapon()
-
+			
+			can_input = false
+			change_phase(PHASES.IDLE)
+			change_state(STATES.IDLE)
+			
 func exit_state():
 	match _state:
 		STATES.JUMP:
@@ -382,15 +416,18 @@ func change_phase(phase):
 
 func _on_Tween_tween_all_completed(): #only for health so far
 	if hp > 0:
+		can_input = true
 		sprite.set_animation("idle")
 		set_process(false)
 	else:
+		can_input = false
 		play_sound("die")
 		sprite.set_animation("die")
 
 
 func _on_AnimatedSprite_animation_finished():
 	if sprite.animation == "die":
+		yield(get_tree().create_timer(1.0), "timeout")
 		if currently_selected:
 			set_inactive()
 		queue_free() #TODO add to die list

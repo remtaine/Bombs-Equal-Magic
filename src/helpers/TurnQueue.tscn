@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/characters/Mage.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/helpers/TurnQueue.gd" type="Script" id=2]
+[ext_resource path="res://src/characters/Mushroom.tscn" type="PackedScene" id=3]
+
+[node name="TurnQueue" type="YSort"]
+script = ExtResource( 2 )
+
+[node name="BlueTeam" type="YSort" parent="."]
+
+[node name="Mage3" parent="BlueTeam" instance=ExtResource( 1 )]
+instance_name = "Cosmo"
+
+[node name="Mage1" parent="BlueTeam" instance=ExtResource( 1 )]
+instance_name = "Alvaro"
+
+[node name="Mage2" parent="BlueTeam" instance=ExtResource( 1 )]
+instance_name = "Basil"
+
+[node name="RedTeam" type="YSort" parent="."]
+
+[node name="Mushroom1" parent="RedTeam" instance=ExtResource( 3 )]
+instance_name = "Delilah"
+sprite_type = "Mushroom"
+
+[node name="Mushroom2" parent="RedTeam" instance=ExtResource( 3 )]
+instance_name = "Esme"
+sprite_type = "Mushroom"
+
+[node name="Mushroom3" parent="RedTeam" instance=ExtResource( 3 )]
+instance_name = "Fiona"
+sprite_type = "Mushroom"

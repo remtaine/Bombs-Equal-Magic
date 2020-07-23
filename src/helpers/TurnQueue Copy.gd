@@ -1,14 +1,11 @@
-class_name TurnQueue
-
 extends YSort
 
 onready var blue_team = $BlueTeam
 onready var red_team = $RedTeam
-onready var turn_label = $TurnLabel
 
 signal changed_leader(leader)
 
-var active_team_index : int = 1
+var active_team_index : int = 0
 
 var active_character
 
@@ -26,12 +23,11 @@ func _ready():
 	
 func setup(o):
 	connect("changed_leader", o, "change_camera_leader")
-	choose_next_active_character()
+	set_next_active_character()
 	#TODO have level call this
 	
 func set_active_character(child):
 	active_character = child
-#	turn_label.text = "Turn: " + active_character.team
 	child.set_active()
 	
 func choose_next_active_character():
@@ -51,6 +47,5 @@ func choose_next_active_character():
 			active_character.set_physics_process(false)
 
 func set_next_active_character():
-	print("FOLLOWING LEADER")
 	emit_signal("changed_leader", get_child(active_team_index).get_child(active_character_indices[active_team_index]))
 	set_active_character(get_child(active_team_index).get_child(active_character_indices[active_team_index]))

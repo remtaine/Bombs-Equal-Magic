@@ -5,9 +5,7 @@
 [ext_resource path="res://images/background/bg_2.png" type="Texture" id=3]
 [ext_resource path="res://images/background/bg_1.png" type="Texture" id=4]
 [ext_resource path="res://tilemaps/TileMapStage1.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/characters/Mage.tscn" type="PackedScene" id=6]
-[ext_resource path="res://src/helpers/TurnQueue.gd" type="Script" id=7]
-[ext_resource path="res://src/characters/Mushroom.tscn" type="PackedScene" id=8]
+[ext_resource path="res://src/helpers/TurnQueue.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/effects/Waterfall.tscn" type="PackedScene" id=9]
 [ext_resource path="res://images/bg effects/decor/drygrass_props.png" type="Texture" id=10]
 [ext_resource path="res://images/bg effects/decor/bigflowers_props.png" type="Texture" id=11]
@@ -24,6 +22,7 @@
 [ext_resource path="res://sounds/music/JDB_Red Control.ogg" type="AudioStream" id=22]
 [ext_resource path="res://src/menus/WinMenu.tscn" type="PackedScene" id=23]
 [ext_resource path="res://src/menus/LoseMenu.tscn" type="PackedScene" id=24]
+[ext_resource path="res://src/stages/Water.tscn" type="PackedScene" id=25]
 
 [sub_resource type="CanvasItemMaterial" id=1]
 particles_animation = true
@@ -51,12 +50,16 @@ orbit_velocity_random = 0.0
 color_ramp = SubResource( 3 )
 anim_speed = 15.0
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=5]
 size = 24
 font_data = ExtResource( 16 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=6]
 size = 48
+font_data = ExtResource( 16 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 24
 font_data = ExtResource( 16 )
 
 [node name="Level1" type="Node2D"]
@@ -161,16 +164,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Water" type="ColorRect" parent="."]
-margin_left = -478.246
-margin_top = 165.247
-margin_right = 1521.75
-margin_bottom = 365.247
-rect_scale = Vector2( 1, 1.8 )
-color = Color( 0.282353, 0.517647, 0.831373, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Water" parent="." instance=ExtResource( 25 )]
+margin_left = -754.367
+margin_top = 169.167
+margin_right = 1245.63
+margin_bottom = 369.167
 
 [node name="TileMap" parent="." instance=ExtResource( 5 )]
 position = Vector2( 0, -1.1842 )
@@ -245,41 +243,27 @@ texture = ExtResource( 19 )
 [node name="Weapons" type="YSort" parent="."]
 
 [node name="CameraMan" parent="." instance=ExtResource( 20 )]
-position = Vector2( 115.839, 103.674 )
+position = Vector2( 125.673, 76.2007 )
 
-[node name="Characters" type="YSort" parent="."]
-script = ExtResource( 7 )
+[node name="Characters" parent="." instance=ExtResource( 6 )]
 
-[node name="BlueTeam" type="YSort" parent="Characters"]
+[node name="Mage3" parent="Characters/BlueTeam" index="0"]
+position = Vector2( 480, -35.2228 )
 
-[node name="Mage1" parent="Characters/BlueTeam" instance=ExtResource( 6 )]
-position = Vector2( 116.789, 106.088 )
-instance_name = "Alvaro"
+[node name="Mage1" parent="Characters/BlueTeam" index="1"]
+position = Vector2( 126.125, 74.6841 )
 
-[node name="Mage2" parent="Characters/BlueTeam" instance=ExtResource( 6 )]
-position = Vector2( 282.132, 152.999 )
-instance_name = "Basil"
+[node name="Mage2" parent="Characters/BlueTeam" index="2"]
+position = Vector2( 286.241, 144.167 )
 
-[node name="Mage3" parent="Characters/BlueTeam" instance=ExtResource( 6 )]
-position = Vector2( 488.215, -22.5297 )
-instance_name = "Cosmo"
+[node name="Mushroom1" parent="Characters/RedTeam" index="0"]
+position = Vector2( 461.19, 138.787 )
 
-[node name="RedTeam" type="YSort" parent="Characters"]
+[node name="Mushroom2" parent="Characters/RedTeam" index="1"]
+position = Vector2( 303.224, 33.8158 )
 
-[node name="Shroom1" parent="Characters/RedTeam" instance=ExtResource( 8 )]
-position = Vector2( 463.784, 151.877 )
-instance_name = "Delilah"
-sprite_type = "Mushroom"
-
-[node name="Shroom2" parent="Characters/RedTeam" instance=ExtResource( 8 )]
-position = Vector2( 293.903, 40.0481 )
-instance_name = "Esme"
-sprite_type = "Mushroom"
-
-[node name="Shroom3" parent="Characters/RedTeam" instance=ExtResource( 8 )]
-position = Vector2( 548.578, -24.4426 )
-instance_name = "Faye"
-sprite_type = "Mushroom"
+[node name="Mushroom3" parent="Characters/RedTeam" index="2"]
+position = Vector2( 539.633, -33.7061 )
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -310,7 +294,7 @@ margin_left = 152.647
 margin_top = -4.38276
 margin_right = 207.647
 margin_bottom = 13.6172
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 5 )
 text = "Time"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -326,10 +310,21 @@ margin_left = 146.562
 margin_top = -1.1842
 margin_right = 186.562
 margin_bottom = 33.8158
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 6 )
 text = "15"
 align = 1
 script = ExtResource( 17 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TurnLabel" type="Label" parent="HUD/Control"]
+margin_left = 4.58158
+margin_top = -4.5308
+margin_right = 101.582
+margin_bottom = 13.4692
+custom_fonts/font = SubResource( 7 )
+text = "Turn: Blue Team"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -341,3 +336,5 @@ stream = ExtResource( 22 )
 volume_db = -5.0
 autoplay = true
 [connection signal="timeout" from="HUD/Control/TurnTimer" to="." method="_on_TurnTimer_timeout"]
+
+[editable path="Characters"]

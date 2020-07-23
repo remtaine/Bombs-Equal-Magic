@@ -1,15 +1,152 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://src/characters/Mushroom Frames.tres" type="SpriteFrames" id=1]
-[ext_resource path="res://src/characters/Mage.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/characters/Mage.gd" type="Script" id=2]
+[ext_resource path="res://src/weapons/HeldWeapon.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/helpers/Label.gd" type="Script" id=4]
+[ext_resource path="res://fonts/body text/Pixels TEXT.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://images/crosshairs/Crosshair16.png" type="Texture" id=6]
+[ext_resource path="res://images/crosshairs/arrowRight.png" type="Texture" id=7]
+[ext_resource path="res://images/weapons/spear/spear.png" type="Texture" id=8]
+[ext_resource path="res://images/weapons/orb/orb_anim_strip_6.png" type="Texture" id=9]
 
-[node name="Mushroom" instance=ExtResource( 4 )]
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 3.40263, 10 )
+
+[sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 5 )
+
+[node name="Mushroom" type="KinematicBody2D" groups=[
+"characters",
+]]
+script = ExtResource( 2 )
 instance_name = "Mushroom"
-team = "Red Team"
+team = "Red"
+team_color = Color( 0.741176, 0.317647, 0.352941, 1 )
 
-[node name="AnimatedSprite" parent="." index="0"]
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
+animation = "run"
 frame = 3
+playing = true
 
-[node name="NameLabel" parent="Labels" index="0"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -0.45196, 0.821745 )
+scale = Vector2( 1, 0.72 )
+shape = SubResource( 1 )
+
+[node name="Labels" type="Node2D" parent="."]
+
+[node name="NameLabel" type="Label" parent="Labels"]
 self_modulate = Color( 0.741176, 0.317647, 0.352941, 1 )
+margin_left = -19.7033
+margin_top = -31.3539
+margin_right = 20.2967
+margin_bottom = -6.35391
+custom_fonts/font = SubResource( 2 )
+text = "Mage"
+align = 1
+valign = 1
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HPLabel" type="Label" parent="Labels"]
+margin_left = -11.7325
+margin_top = -19.2574
+margin_right = 12.2675
+margin_bottom = -5.25743
+custom_fonts/font = SubResource( 3 )
+text = "100"
+align = 1
+valign = 1
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StateLabel" type="Label" parent="Labels"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -18.8098
+margin_top = -32.3885
+margin_right = 20.1902
+margin_bottom = -18.3885
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_fonts/font = SubResource( 4 )
+text = "LABEL"
+align = 1
+valign = 1
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+is_on = false
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 0, -35.2228 )
+
+[node name="CrosshairPivot" type="Position2D" parent="."]
+show_behind_parent = true
+
+[node name="Crosshair" type="Sprite" parent="CrosshairPivot"]
+self_modulate = Color( 1, 1, 1, 0 )
+position = Vector2( 25.7901, -0.0833325 )
+scale = Vector2( 0.2, 0.2 )
+texture = ExtResource( 6 )
+
+[node name="Arrow" type="TextureProgress" parent="CrosshairPivot"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 6.20698
+margin_top = -4.99833
+margin_right = 106.207
+margin_bottom = 95.0017
+rect_scale = Vector2( 0.3, 0.1 )
+texture_under = ExtResource( 7 )
+texture_progress = ExtResource( 7 )
+tint_progress = Color( 0.509804, 0.666667, 0.156863, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Weapons" type="Position2D" parent="CrosshairPivot"]
+position = Vector2( 8.56905, -0.732395 )
+
+[node name="Bomb" parent="CrosshairPivot/Weapons" instance=ExtResource( 3 )]
+
+[node name="Spear" parent="CrosshairPivot/Weapons" instance=ExtResource( 3 )]
+visible = false
+position = Vector2( 1.46132, 0.36533 )
+rotation = -1.5708
+texture = ExtResource( 8 )
+region_enabled = false
+
+[node name="Orb" parent="CrosshairPivot/Weapons" instance=ExtResource( 3 )]
+visible = false
+position = Vector2( 0.126373, -0.168497 )
+texture = ExtResource( 9 )
+region_rect = Rect2( 40, 0, 8, 8 )
+
+[node name="Audio" type="Node2D" parent="."]
+
+[node name="LaunchAudio" type="AudioStreamPlayer2D" parent="Audio"]
+
+[node name="MovementAudio" type="AudioStreamPlayer2D" parent="Audio"]
+
+[node name="AimWeaponAudio" type="AudioStreamPlayer2D" parent="Audio"]
+
+[node name="SelectAudio" type="AudioStreamPlayer2D" parent="Audio"]
+
+[node name="Tween" type="Tween" parent="."]
+[connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
+[connection signal="tween_all_completed" from="Tween" to="." method="_on_Tween_tween_all_completed"]

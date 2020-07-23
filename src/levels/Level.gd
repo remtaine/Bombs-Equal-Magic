@@ -14,6 +14,8 @@ onready var HUD = $HUD/Control
 onready var win_menu := $HUD/WinMenu
 onready var lose_menu := $HUD/LoseMenu
 onready var turn_timer = $HUD/Control/TurnTimer
+
+onready var turn_label = $HUD/Control/TurnLabel
 onready var time_text_label := $HUD/Control/TimeLeftLabel
 onready var timer_label := $HUD/Control/TurnTimer/TimeLabel
 
@@ -29,8 +31,6 @@ func _ready():
 		red_child.level_setup(self)
 		add_team_hp(red_team_hp,red_child.hp)
 	
-	print_debug("blue team HP is ", blue_team_hp.value)
-	print_debug("red team HP is ", red_team_hp.value)
 
 func _input(event):
 	if event.is_action_pressed("ui_cancel"): #esc
@@ -39,16 +39,17 @@ func _input(event):
 		get_tree().reload_current_scene()
 	if event.is_action_pressed("go_to_menu"): #R
 		get_tree().change_scene("res://src/menus/MainMenu.tscn")
-	if event.is_action_pressed("toggle_labels"): #T
-		for child in character_holder.get_children():
-			for label in child.get_node("Labels"):
-				label.toggle()
+#	if event.is_action_pressed("toggle_labels"): #T
+#		for child in character_holder.get_children():
+#			for label in child.get_node("Labels"):
+#				label.toggle()
 
 func change_camera_leader(leader = null):
-	print_debug("CHECKING IF LEADER IS NULL!")	
 	if leader != null:
+		if leader.is_in_group("characters"):
+			turn_label.text = leader.team + "'s turn"
+			turn_label.self_modulate = leader.team_color
 		world_camera.change_leader(leader)
-		print_debug("CHANGED CAMERA LEADER TO ", leader)
 
 
 func _on_TurnTimer_timeout():
@@ -63,20 +64,23 @@ func _on_pause_timer():
 
 func _on_take_damage(team, dmg):
 	match team:
-		"Blue Team":
+		"Blue":
 			var x = blue_team_hp.value - dmg
 			if x <= 0:
 				HUD.visible = false
 				timer_label.visible = false	
 				lose_menu.show()
 			blue_team_hp.take_damage(dmg)
-		"Red Team":
+		"Red":
 			var x = red_team_hp.value - dmg
 			if x <= 0:
 				HUD.visible = false
 				timer_label.visible = false
 				win_menu.show()
 			red_team_hp.take_damage(dmg)
+
+func _on_panning():
+	world_camera_man.panning(true)
 	
 func add_team_hp(team_hp, add):
 	team_hp.max_value += add

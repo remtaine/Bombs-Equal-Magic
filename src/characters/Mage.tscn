@@ -26,11 +26,13 @@ font_data = ExtResource( 10 )
 "characters",
 ]]
 script = ExtResource( 2 )
+team = "Blue"
+team_color = Color( 0.403922, 0.560784, 0.796078, 1 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
 animation = "run"
-frame = 2
+frame = 3
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -86,7 +88,6 @@ script = ExtResource( 8 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-is_on = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 0, -35.2228 )

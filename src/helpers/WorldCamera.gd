@@ -1,6 +1,7 @@
 extends Camera2D
 
 var leader = null
+onready var camera_man = get_parent()
 
 func _ready():
 	pass
