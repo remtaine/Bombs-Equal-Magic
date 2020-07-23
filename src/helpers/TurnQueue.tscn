@@ -23,11 +23,14 @@ instance_name = "Basil"
 [node name="Mushroom1" parent="RedTeam" instance=ExtResource( 3 )]
 instance_name = "Delilah"
 sprite_type = "Mushroom"
+is_bot = true
 
 [node name="Mushroom2" parent="RedTeam" instance=ExtResource( 3 )]
 instance_name = "Esme"
 sprite_type = "Mushroom"
+is_bot = true
 
 [node name="Mushroom3" parent="RedTeam" instance=ExtResource( 3 )]
 instance_name = "Fiona"
 sprite_type = "Mushroom"
+is_bot = true

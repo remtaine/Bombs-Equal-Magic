@@ -4,7 +4,7 @@ extends YSort
 
 onready var blue_team = $BlueTeam
 onready var red_team = $RedTeam
-onready var turn_label = $TurnLabel
+#onready var turn_label = $TurnLabel
 
 signal changed_leader(leader)
 
@@ -42,10 +42,10 @@ func set_active_character(child):
 			"Red":
 				#look for opposing in blue
 				opposing_team = $BlueTeam
-		for child in opposing_team:
-			if opposing_character == null:
+		for child in opposing_team.get_children():
+			if opposing_character == null:# or child.global_position.distance_to(active_character.global_position) < opposing_character.global_position.distance_to(active_character.global_position):
 				opposing_character = child
-			elif opposing_character.global_position
+
 		active_character.opposing_character = opposing_character
 		#TODO look for closest enemy and put in opposing_character
 	child.set_active()

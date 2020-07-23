@@ -116,7 +116,6 @@ shape = SubResource( 2 )
 position = Vector2( 0, -1 )
 frames = SubResource( 14 )
 animation = "move"
-frame = 3
 playing = true
 
 [node name="CircleSprite" type="Sprite" parent="AnimatedSprite"]

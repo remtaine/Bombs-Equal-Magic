@@ -1,7 +1,7 @@
 extends Sprite
 
 onready var destructible = $Destructible
-onready var bg_sprite = $BGSprite
+#onready var bg_sprite = $BGSprite
 
 func _ready():
 	pass

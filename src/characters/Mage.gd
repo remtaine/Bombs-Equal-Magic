@@ -174,6 +174,7 @@ func move():
 		if can_input:
 			interpret_input()
 	else:
+		print("DOING AI STUFF FOR MOVE")
 		do_ai_stuff()
 	
 #	is_on_floor = state.get_contact_count() > 0 and int(state.get_contact_collider_position(0).y) >= int(global_position.y)
@@ -217,6 +218,7 @@ func shoot():
 		if can_input:
 			interpret_input()
 	else:
+		print("DOING AI STUFF FOR SHOOT")
 		do_ai_stuff()
 
 func update_health(dmg):
@@ -314,8 +316,10 @@ func do_ai_stuff():
 					STATES.AIM:
 						#DONE? change to orb
 						while _weapon != 2:
+							print_debug("CHANGING WEAPON")
 							simulate_button_press("change_weapon_right")
 						#DONE? aim at enemy
+						print_debug("AIMING")
 						var x = global_position.angle_to(ai_planned_enemy.global_position)
 						if x > crosshair_pivot.rotation_degrees:
 							while x > crosshair_pivot.rotation_degrees:
@@ -328,18 +332,23 @@ func do_ai_stuff():
 						Input.action_press("select")
 					STATES.THROW:
 						#DONE? charge strength to ai_planned_strength
+						print_debug("CHARGING")
 						if arrow.value >= ai_planned_strength:
 							Input.action_release("select")
 			PHASES.MOVE:
 				yield(get_tree().create_timer(2.0), "timeout")
 				#TODO choose closest enemy
-				
+				print_debug("CHOOSING CLOSEST ENEMY")
+				ai_planned_enemy = opposing_character
 				#DONE? face enemy
+				print_debug("FACING ENEMY")
 				if ai_planned_enemy.global_position.x > global_position.x: #ie should face right
 					simulate_button_press("move_right")
 				elif ai_planned_enemy.global_position.x < global_position.x: #ie should face left
 					simulate_button_press("move_left")					
 				#TODO plan ai_strength
+				print_debug("PLANNING STRENGTH")
+				ai_planned_strength = 50 #TEMP
 				change_phase(PHASES.SHOOT)	
 				yield(get_tree().create_timer(0.5), "timeout")
 

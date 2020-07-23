@@ -204,31 +204,31 @@ position = Vector2( 344.239, 57.2625 )
 position = Vector2( 336.469, 57.2625 )
 
 [node name="arrow_plate_right" type="Sprite" parent="Decor"]
-position = Vector2( 145.816, 133.925 )
+position = Vector2( 146.457, 102.004 )
 texture = ExtResource( 12 )
 
 [node name="bigflowers_props" type="Sprite" parent="Decor"]
-position = Vector2( 257.875, 155.229 )
+position = Vector2( 258.516, 123.308 )
 texture = ExtResource( 11 )
 
 [node name="drygrass_props" type="Sprite" parent="Decor"]
-position = Vector2( 311.224, 41.3054 )
+position = Vector2( 311.865, 9.3845 )
 texture = ExtResource( 10 )
 
 [node name="grass_props" type="Sprite" parent="Decor"]
-position = Vector2( 373.075, 153.316 )
+position = Vector2( 373.716, 121.395 )
 texture = ExtResource( 15 )
 
 [node name="flowers_props" type="Sprite" parent="Decor"]
-position = Vector2( 531.633, 153.316 )
+position = Vector2( 532.274, 121.395 )
 texture = ExtResource( 13 )
 
 [node name="wooden_plate" type="Sprite" parent="Decor"]
-position = Vector2( 498.476, 149.703 )
+position = Vector2( 499.117, 117.782 )
 texture = ExtResource( 14 )
 
 [node name="drygrass_props2" type="Sprite" parent="Decor"]
-position = Vector2( 360.109, 41.3054 )
+position = Vector2( 360.75, 9.3845 )
 texture = ExtResource( 10 )
 
 [node name="BirdParticlesLeft" type="Particles2D" parent="Decor"]
