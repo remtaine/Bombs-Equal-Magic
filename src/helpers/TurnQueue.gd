@@ -42,7 +42,8 @@ func choose_next_active_character(bring_back = false): #step 1
 	#switch team
 	if not bring_back:
 		team_members[active_team_index].push_back(team_members[active_team_index].pop_front())
-		active_team_index = (active_team_index + 1) % teams.size()
+		if teams.size() != 0:
+			active_team_index = (active_team_index + 1) % teams.size()
 	#choose current at index 0 IF > 0
 	if team_members[active_team_index].size() > 0:
 		active_character = team_members[active_team_index][0]

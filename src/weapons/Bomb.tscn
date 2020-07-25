@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://images/weapons/bomb/bomb_thrown_anim_strip_3.png" type="Texture" id=1]
 [ext_resource path="res://images/weapons/bomb/bomb_on_ground_anim_strip_8.png" type="Texture" id=2]
@@ -17,96 +17,96 @@ bounce = 0.3
 [sub_resource type="CircleShape2D" id=2]
 
 [sub_resource type="AtlasTexture" id=3]
-atlas = ExtResource( 1 )
-region = Rect2( 0, 0, 8, 8 )
-
-[sub_resource type="AtlasTexture" id=4]
-atlas = ExtResource( 1 )
-region = Rect2( 8, 0, 8, 8 )
-
-[sub_resource type="AtlasTexture" id=5]
-atlas = ExtResource( 1 )
-region = Rect2( 16, 0, 8, 8 )
-
-[sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 5 )
 region = Rect2( 0, 128, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=7]
+[sub_resource type="AtlasTexture" id=4]
 atlas = ExtResource( 5 )
 region = Rect2( 64, 128, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=8]
+[sub_resource type="AtlasTexture" id=5]
 atlas = ExtResource( 5 )
 region = Rect2( 128, 128, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=9]
+[sub_resource type="AtlasTexture" id=6]
 atlas = ExtResource( 5 )
 region = Rect2( 192, 128, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=10]
+[sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 5 )
 region = Rect2( 256, 128, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=11]
+[sub_resource type="AtlasTexture" id=8]
 atlas = ExtResource( 5 )
 region = Rect2( 0, 192, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=12]
+[sub_resource type="AtlasTexture" id=9]
 atlas = ExtResource( 5 )
 region = Rect2( 64, 192, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=13]
+[sub_resource type="AtlasTexture" id=10]
 atlas = ExtResource( 5 )
 region = Rect2( 128, 192, 64, 64 )
 
-[sub_resource type="AtlasTexture" id=14]
+[sub_resource type="AtlasTexture" id=11]
 atlas = ExtResource( 2 )
 region = Rect2( 0, 0, 8, 8 )
 
-[sub_resource type="AtlasTexture" id=15]
+[sub_resource type="AtlasTexture" id=12]
 atlas = ExtResource( 2 )
 region = Rect2( 8, 0, 8, 8 )
 
-[sub_resource type="AtlasTexture" id=16]
+[sub_resource type="AtlasTexture" id=13]
 atlas = ExtResource( 2 )
 region = Rect2( 16, 0, 8, 8 )
 
-[sub_resource type="AtlasTexture" id=17]
+[sub_resource type="AtlasTexture" id=14]
 atlas = ExtResource( 2 )
 region = Rect2( 24, 0, 8, 8 )
 
-[sub_resource type="AtlasTexture" id=18]
+[sub_resource type="AtlasTexture" id=15]
 atlas = ExtResource( 2 )
 region = Rect2( 32, 0, 8, 8 )
 
-[sub_resource type="AtlasTexture" id=19]
+[sub_resource type="AtlasTexture" id=16]
 atlas = ExtResource( 2 )
 region = Rect2( 40, 0, 8, 8 )
 
-[sub_resource type="AtlasTexture" id=20]
+[sub_resource type="AtlasTexture" id=17]
 atlas = ExtResource( 2 )
 region = Rect2( 48, 0, 8, 8 )
 
-[sub_resource type="AtlasTexture" id=21]
+[sub_resource type="AtlasTexture" id=18]
 atlas = ExtResource( 2 )
 region = Rect2( 56, 0, 8, 8 )
 
+[sub_resource type="AtlasTexture" id=19]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 8, 8 )
+
+[sub_resource type="AtlasTexture" id=20]
+atlas = ExtResource( 1 )
+region = Rect2( 8, 0, 8, 8 )
+
+[sub_resource type="AtlasTexture" id=21]
+atlas = ExtResource( 1 )
+region = Rect2( 16, 0, 8, 8 )
+
 [sub_resource type="SpriteFrames" id=22]
 animations = [ {
-"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ) ],
-"loop": true,
-"name": "ready",
-"speed": 8.0
-}, {
-"frames": [ SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), null ],
+"frames": [ SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), null ],
 "loop": false,
 "name": "explode",
 "speed": 10.0
 }, {
-"frames": [ SubResource( 14 ), SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ), SubResource( 19 ), SubResource( 20 ), SubResource( 21 ) ],
+"frames": [ SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 14 ), SubResource( 15 ), SubResource( 16 ), SubResource( 17 ), SubResource( 18 ) ],
 "loop": false,
 "name": "go",
+"speed": 8.0
+}, {
+"frames": [ SubResource( 19 ), SubResource( 20 ), SubResource( 21 ) ],
+"loop": true,
+"name": "ready",
 "speed": 8.0
 } ]
 
@@ -116,26 +116,11 @@ radius = 12.0
 [sub_resource type="DynamicFont" id=24]
 font_data = ExtResource( 4 )
 
-[sub_resource type="Gradient" id=25]
-colors = PoolColorArray( 1, 1, 1, 0.784314, 1, 1, 1, 0 )
-
-[sub_resource type="GradientTexture" id=26]
-gradient = SubResource( 25 )
-
 [sub_resource type="Curve" id=27]
 _data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.992883, 0.498288 ), 0.0, 0.0, 0, 0 ]
 
-[sub_resource type="CurveTexture" id=28]
-curve = SubResource( 27 )
-
-[sub_resource type="ParticlesMaterial" id=29]
-flag_disable_z = true
-gravity = Vector3( 0, 0, 0 )
-orbit_velocity = 0.0
-orbit_velocity_random = 0.0
-scale = 0.3
-scale_curve = SubResource( 28 )
-color_ramp = SubResource( 26 )
+[sub_resource type="Gradient" id=25]
+colors = PoolColorArray( 1, 1, 1, 0.784314, 1, 1, 1, 0 )
 
 [node name="Bomb" type="RigidBody2D" groups=[
 "weapons",
@@ -196,15 +181,17 @@ __meta__ = {
 
 [node name="BounceAudio" type="AudioStreamPlayer2D" parent="Audio"]
 
-[node name="StreamParticles" type="Particles2D" parent="."]
+[node name="StreamParticles" type="CPUParticles2D" parent="."]
 show_behind_parent = true
 scale = Vector2( 0.2, 0.2 )
 lifetime = 0.5
-visibility_rect = Rect2( -320, -180, 640, 360 )
 local_coords = false
 draw_order = 1
-process_material = SubResource( 29 )
 texture = ExtResource( 8 )
+gravity = Vector2( 0, 0 )
+scale_amount = 0.3
+scale_amount_curve = SubResource( 27 )
+color_ramp = SubResource( 25 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]

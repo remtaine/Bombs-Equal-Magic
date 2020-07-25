@@ -8,4 +8,5 @@ func _ready():
 
 func _physics_process(delta):
 	velocity.y += 3
-	velocity = move_and_slide(velocity, Vector2.UP, true, 1)
+#	move_and_collide(velocity * delta)
+	velocity = move_and_slide(velocity * Vector2.DOWN, Vector2.UP, true, 1)

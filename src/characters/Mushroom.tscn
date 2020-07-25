@@ -33,7 +33,7 @@ team_color = Color( 0.741176, 0.317647, 0.352941, 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
 animation = "run"
-frame = 5
+frame = 2
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

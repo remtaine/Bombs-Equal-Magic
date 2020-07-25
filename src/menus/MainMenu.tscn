@@ -300,7 +300,7 @@ margin_top = 160.0
 margin_right = 167.0
 margin_bottom = 187.0
 custom_fonts/font = SubResource( 6 )
-text = "v1.0.3 - made for the Ranged Combat Jam
+text = "v1.0.5 - made for the Ranged Combat Jam
 Programming by Efigi - SFX by mr_studders "
 __meta__ = {
 "_edit_use_anchors_": false
@@ -333,40 +333,42 @@ zoom = Vector2( 1.6, 1.6 )
 position = Vector2( 366.64, 40.9001 )
 frames = ExtResource( 4 )
 animation = "idle"
-frame = 1
+frame = 3
 playing = true
 
 [node name="Mage2" type="AnimatedSprite" parent="Sprites"]
 position = Vector2( 474.711, 152.529 )
 frames = ExtResource( 4 )
 animation = "idle"
+frame = 2
 playing = true
 
 [node name="Mage3" type="AnimatedSprite" parent="Sprites"]
 position = Vector2( 218.426, 119.697 )
 frames = ExtResource( 4 )
 animation = "idle"
+frame = 2
 playing = true
 
 [node name="Mushroom" type="AnimatedSprite" parent="Sprites"]
 position = Vector2( 124.151, 135.644 )
 frames = ExtResource( 5 )
 animation = "idle"
-frame = 3
+frame = 2
 playing = true
 
 [node name="Mushroom2" type="AnimatedSprite" parent="Sprites"]
 position = Vector2( 297.692, 40.2134 )
 frames = ExtResource( 5 )
 animation = "idle"
-frame = 3
+frame = 2
 playing = true
 
 [node name="Mushroom3" type="AnimatedSprite" parent="Sprites"]
 position = Vector2( 395.25, 152.529 )
 frames = ExtResource( 5 )
 animation = "idle"
-frame = 2
+frame = 1
 playing = true
 
 [node name="Audio" type="Node2D" parent="."]

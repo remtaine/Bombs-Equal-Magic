@@ -314,10 +314,10 @@ position = Vector2( 104, 101.263 )
 position = Vector2( 286.241, 144.167 )
 
 [node name="Mage3" parent="Characters/BlueTeam" index="2"]
-position = Vector2( 539.253, -41.9879 )
+position = Vector2( 553.869, -33.2558 )
 
 [node name="Mushroom3" parent="Characters/RedTeam" index="0"]
-position = Vector2( 481.547, -39.3048 )
+position = Vector2( 484.433, -38.543 )
 
 [node name="Mushroom1" parent="Characters/RedTeam" index="1"]
 position = Vector2( 460.393, 140.913 )

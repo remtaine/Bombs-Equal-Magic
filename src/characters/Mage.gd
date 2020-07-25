@@ -62,6 +62,7 @@ export var team_color := Color()
 export var sprite_type : String = "Mage"
 export var is_bot : bool = false
 
+var damage_just_taken : int = 0
 var ai_planned_strength :int = 0
 var ai_planned_enemy
 
@@ -76,7 +77,7 @@ var throw_strength :float = 0.0
 
 var run_accel : int = 10
 var jump_speed : int = 100
-var ground_friction : int = 10
+var ground_friction : int = 5
 var max_speed : int = 30
 var current_speed : Vector2 = Vector2(0, 0)
 
@@ -129,6 +130,9 @@ var STATES = {
 	RUN = "RUNNING",
 	JUMP = "JUMPING",
 	
+	HURT = "HURT",
+	DIE = "DEAD",
+	
 	#for shoot phase
 	AIM = "AIMING",
 	THROW = "THROWING",
@@ -172,6 +176,7 @@ func set_inactive():
 	crosshair_pivot.rotation_degrees = 0
 	currently_selected = false
 	emit_signal("turn_done")
+	change_phase(PHASES.IDLE)
 	change_state(STATES.IDLE)
 	can_input = false
 
@@ -182,8 +187,15 @@ func _physics_process(delta):
 			move()
 		PHASES.SHOOT:
 			shoot()
-	
-	current_speed.y += 3	
+		PHASES.IDLE:
+			if _state == STATES.HURT:
+				if is_on_floor():
+					apply_friction()
+				else:
+					pass
+#					apply_friction(0.2)
+
+	current_speed.y += 3
 	current_speed = move_and_slide(current_speed, Vector2.UP, true, 4, 1.0472)
 
 func _process(delta):
@@ -195,7 +207,6 @@ func move():
 			inputs = interpret_input(receive_raw_input())
 	
 #	is_on_floor = state.get_contact_count() > 0 and int(state.get_contact_collider_position(0).y) >= int(global_position.y)
-#	print_debug("AM I ON FLOOR? ", is_on_floor)
 	match _state:
 		STATES.JUMP:
 			if current_speed.y >= 0 and sprite.animation == "jump_up":
@@ -220,8 +231,7 @@ func move():
 #				state.linear_velocity.x = -current_speed.x
 #				state.linear_velocity.x = current_speed.x
 		STATES.IDLE:
-			if current_speed.x != 0:
-				current_speed.x = max(0, current_speed.x - ground_friction) 
+			apply_friction()
 	
 	if is_flipped:
 		crosshair_pivot.scale.x = -1
@@ -230,19 +240,21 @@ func move():
 		crosshair_pivot.scale.x = 1
 #		weapons.scale.x = 1
 
+func apply_friction(multiplier = 1):
+	if current_speed.x < 0:
+		current_speed.x = min(0, current_speed.x + (ground_friction* multiplier))
+	elif current_speed.x > 0:
+		current_speed.x = max(0, current_speed.x - (ground_friction* multiplier))
+
 func shoot():
 	if can_input:
 			interpret_input(receive_raw_input())
 
 
 func update_health(dmg):
-	can_input = false
-	set_process(true)
-	sprite.set_animation("hurt")
-	emit_signal("took_damage", team, min(hp, dmg))	
-	hp = max(0, hp - dmg)
-	tween.interpolate_property(self, "hp_shown", hp_shown, hp, 2.0, tween.TRANS_LINEAR, tween.EASE_IN)
-	tween.start()
+	if dmg > 0:
+		damage_just_taken = dmg
+		change_state(STATES.HURT, true)
 
 func spawn_weapon():
 	play_sound("launch")
@@ -296,8 +308,8 @@ func receive_raw_input():
 		var weapon_change_direction = 0
 		var is_panning = false
 		var panning_direction = 0
-
-
+		
+		print_debug("AI STATE AT ", _ai_state)
 		
 		match _phase:
 			PHASES.MOVE:
@@ -314,35 +326,40 @@ func receive_raw_input():
 						else:
 							change_ai_state(AI_STATES.IDLE)
 					AI_STATES.FACE_ENEMY:
-						if ai_planned_enemy.global_position.x > global_position.x: #ie should face right
+						if ai_planned_enemy.global_position.x - global_position.x > 2: #ie should face right
 							run_direction = 1
 							is_running = true
-						elif ai_planned_enemy.global_position.x < global_position.x: #ie should face left
+						elif ai_planned_enemy.global_position.x - global_position.x < -2: #ie should face left
 							run_direction = -1
 							is_running = true
-						tween.interpolate_callback(self, 1.0, "change_ai_state", AI_STATES.PLAN_STRENGTH)
+						tween.interpolate_callback(self, 0.5, "change_ai_state", AI_STATES.START_AIM)
 						tween.start()
 					AI_STATES.PLAN_STRENGTH:
-						var x = 100
-						if ai_planned_enemy != null:
-							x = global_position.distance_to(ai_planned_enemy.global_position)
-						print("DIST AT ", x)
-						randomize()
-						var temp
-						if is_flipped:
-							temp = float((85 + randi() % 3)/10.0)
-						else:
-							temp = float((100 + randi() % 3)/10.0)
-						ai_planned_strength = ceil(x/temp)
-						print("PLAN STRENGTH DONE! with str ", ai_planned_strength)
-						change_ai_state(AI_STATES.START_AIM)						
-						print("PLAN STRENGTH TO START AIM!")
+						pass
+#						var x = 100
+#						if ai_planned_enemy != null:
+#							x = global_position.distance_to(ai_planned_enemy.global_position)
+#						randomize()
+#						var temp
+#						if is_flipped:
+#							temp = float((85 + randi() % 3)/10.0)
+#						else:
+#							temp = float((100 + randi() % 3)/10.0)
+#						ai_planned_strength = ceil(x/temp)
+#						change_ai_state(AI_STATES.START_AIM)						
 					AI_STATES.START_AIM:
-						print("CURRENTLY START AIM!")
+						var dist = 100
+						if ai_planned_enemy != null:
+							dist = global_position.distance_to(ai_planned_enemy.global_position)
+						randomize()
+						var divisor
+						if is_flipped:
+							divisor = float((90 + randi() % 3)/10.0)
+						else:
+							divisor = float((85 + randi() % 3)/10.0)
+						ai_planned_strength = ceil(dist/divisor)
 						is_select = true
-						is_select_hold = true
 						change_ai_state(AI_STATES.CHANGE_WEAPON)
-						
 			PHASES.SHOOT:
 				match _ai_state:
 					AI_STATES.CHANGE_WEAPON:
@@ -357,14 +374,13 @@ func receive_raw_input():
 #							crosshair_pivot.rotation_degrees *= -1
 #							else:
 #								aim_direction = 1
-						print("g to aim")
 						var x = acos(abs((global_position - ai_planned_enemy.global_position).normalized().x))
 						x= rad2deg(x)
 						if global_position.y < ai_planned_enemy.global_position.y and is_flipped: #ie enemy is below
 							x *= -1
 						elif global_position.y > ai_planned_enemy.global_position.y and not is_flipped: #ie enemy is below
-							x *= -1
-						print("NOW COMPARING ", x, " TO ", crosshair_pivot.rotation_degrees)
+							x *= -1 #yes theyre the same thing, i dont want the line to be too long
+#						print_debug("NOW COMPARING ", x, " TO ", crosshair_pivot.rotation_degrees)
 						var y = (x - crosshair_pivot.rotation_degrees)
 						if is_flipped:
 							if y < -2: #ie 85 - 90
@@ -376,10 +392,10 @@ func receive_raw_input():
 							else:
 								change_ai_state(AI_STATES.START_THROW)
 						else:
-							if y > 1:
-									is_moving_aim = true
-									aim_direction = 1 
-							elif y < -1:
+							if y > 2:
+								is_moving_aim = true
+								aim_direction = 1 
+							elif y < -2:
 								is_moving_aim = true
 								aim_direction = -1 
 							else:
@@ -392,11 +408,9 @@ func receive_raw_input():
 						if arrow.value < ai_planned_strength:
 							is_select_hold = true
 						else:
-							print("THROW DONE! with str ", ai_planned_strength)													
 							change_ai_state(AI_STATES.IDLE)
 					_:
-						change_ai_state(AI_STATES.AIM)
-
+						change_ai_state(AI_STATES.CHANGE_WEAPON)
 		
 		a = {
 				run_direction = run_direction,
@@ -477,7 +491,7 @@ func interpret_input(inputs = null):
 				can_input = false
 				change_state(STATES.IDLE)
 				return
-			if inputs.is_select and (_state == STATES.IDLE or is_bot):
+			if inputs.is_select and (_state == STATES.IDLE):
 				change_phase(PHASES.SHOOT)
 				return
 			elif (inputs.is_jumping and is_on_floor) or _state == STATES.JUMP:
@@ -574,12 +588,26 @@ func enter_state():
 #			apply_central_impulse(Vector2.UP * jump_speed)
 			current_speed.y = -jump_speed
 #			current_speed.x = -jump_speed
-			
 		STATES.RUN:
 			sprite.set_animation("run")
 		STATES.IDLE:
 			sprite.set_animation("idle")
 			current_speed.x = 0
+		STATES.HURT:
+				can_input = false
+				set_process(true) #for updating text!
+				sprite.set_animation("hurt")
+				emit_signal("took_damage", team, min(hp, damage_just_taken))	
+				hp = max(0, hp - damage_just_taken)
+				tween.interpolate_property(self, "hp_shown", hp_shown, hp, 2.0, tween.TRANS_LINEAR, tween.EASE_IN)
+				tween.start()
+		STATES.DIE:
+			emit_signal("just_died", self)
+			can_input = false
+			$Labels.visible = false
+			play_sound("die")
+			sprite.set_animation("die")
+	
 		STATES.AIM:
 			_weapon = WEAPONS.BOMB
 		STATES.THROW:
@@ -605,8 +633,8 @@ func exit_state():
 			dust.setup("land", global_position)
 			others_handler.add_child(dust)
 
-func change_state(state):
-	if _state != state:
+func change_state(state, override = false):
+	if _state != state or override:
 		exit_state()
 		_state = state
 		state_label.text = _state
@@ -620,7 +648,7 @@ func enter_phase():
 			pass
 		PHASES.SHOOT:
 			if is_bot:
-				change_ai_state(AI_STATES.AIM)
+				change_ai_state(AI_STATES.CHANGE_WEAPON)
 			crosshair_pivot.visible = true
 			change_state(STATES.AIM)
 
@@ -637,20 +665,15 @@ func _on_terrain_damage(pos, radius):
 	emit_signal("did_terrain_damage", pos, radius)
 
 func _on_Tween_tween_all_completed(): #only for health so far
-	if is_bot and _ai_state == AI_STATES.FACE_ENEMY:
-		pass
+	if is_bot and _state != STATES.HURT:
+		yield(get_tree().create_timer(1.0), "timeout")
 	else:
 		if hp > 0:
 #			can_input = true
-			sprite.set_animation("idle")
 			set_process(false)
+			change_state(STATES.IDLE)
 		else:
-			emit_signal("just_died", self)
-			can_input = false
-			$Labels.visible = false
-			play_sound("die")
-			sprite.set_animation("die")
-			sprite.set_animation("die")
+			change_state(STATES.DIE)
 
 
 func _on_AnimatedSprite_animation_finished():

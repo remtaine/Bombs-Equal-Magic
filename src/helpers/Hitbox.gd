@@ -56,13 +56,16 @@ func _on_Hitbox_body_entered(body):
 		else:
 			print(damage)
 			body.update_health(damage)
-		
+			
+		if does_recoil and recoil_strength != 0:
+			var v = recoil_strength * (body.global_position - owned_by.global_position).normalized()
+			if v.y > 0:
+				body.current_speed = Vector2(v.x, -20 - v.y)
+			else:
+				body.current_speed = Vector2(v.x, -20 + v.y)
+	#			body.current_speed = body.move_and_slide(body.current_speed, Vector2.UP)
+			print("VEL IS RECOILED ", v)
+
 	if terrain_damage and max_dist != 0:
 		emit_signal("did_terrain_damage", global_position, max_dist)
 			#TODO add terrain damage
-			
-#		if does_recoil and recoil_strength != 0:
-#			var v = recoil_strength * (body.global_position - owned_by.global_position).normalized()
-#			body.current_speed = Vector2(v.x, -5-abs(v.y) )
-##			body.current_speed = body.move_and_slide(body.current_speed, Vector2.UP)
-#			print("VEL IS RECOILED ", v)

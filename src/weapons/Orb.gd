@@ -32,16 +32,15 @@ var has_played_bounce : bool = false
 func _init():
 	speed = 100
 	randomize()
-	damage = 108 + (randi() % 7)
-	knockback = 50
+	damage = 18 + (randi() % 7)
+	knockback = 75
 	max_distance = 10
 	
 func _ready():
 	sprite.offset.y = 0
 	mode = RigidBody2D.MODE_CHARACTER
 	
-	sprite.set_animation("ready")
-	hitbox.setup(self, false, 20, true)
+	hitbox.setup(self, false, 20, true, true, knockback)
 	stream_particles.visible = true
 	setup_sounds()
 	

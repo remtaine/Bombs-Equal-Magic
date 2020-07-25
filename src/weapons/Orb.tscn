@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://images/weapons/orb/orb_anim_strip_6.png" type="Texture" id=1]
 [ext_resource path="res://src/helpers/Label.gd" type="Script" id=2]
@@ -78,25 +78,11 @@ radius = 12.0
 [sub_resource type="DynamicFont" id=16]
 font_data = ExtResource( 7 )
 
-[sub_resource type="Gradient" id=17]
-colors = PoolColorArray( 1, 1, 1, 0.784314, 1, 1, 1, 0 )
-
-[sub_resource type="GradientTexture" id=18]
-gradient = SubResource( 17 )
-
 [sub_resource type="Curve" id=19]
 _data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 0.992883, 0.498288 ), 0.0, 0.0, 0, 0 ]
 
-[sub_resource type="CurveTexture" id=20]
-curve = SubResource( 19 )
-
-[sub_resource type="ParticlesMaterial" id=21]
-flag_disable_z = true
-gravity = Vector3( 0, 0, 0 )
-orbit_velocity = 0.0
-orbit_velocity_random = 0.0
-scale_curve = SubResource( 20 )
-color_ramp = SubResource( 18 )
+[sub_resource type="Gradient" id=17]
+colors = PoolColorArray( 1, 1, 1, 0.784314, 1, 1, 1, 0 )
 
 [sub_resource type="Animation" id=22]
 resource_name = "waver"
@@ -138,7 +124,7 @@ self_modulate = Color( 1, 1, 1, 0.84265 )
 position = Vector2( 0, -1 )
 frames = SubResource( 14 )
 animation = "move"
-frame = 4
+frame = 5
 playing = true
 
 [node name="CircleSprite" type="Sprite" parent="AnimatedSprite"]
@@ -170,14 +156,15 @@ __meta__ = {
 
 [node name="BounceAudio" type="AudioStreamPlayer2D" parent="Audio"]
 
-[node name="StreamParticles" type="Particles2D" parent="."]
+[node name="StreamParticles" type="CPUParticles2D" parent="."]
 show_behind_parent = true
 lifetime = 3.0
-visibility_rect = Rect2( -320, -180, 640, 360 )
 local_coords = false
 draw_order = 1
-process_material = SubResource( 21 )
 texture = ExtResource( 4 )
+gravity = Vector2( 0, 0 )
+scale_amount_curve = SubResource( 19 )
+color_ramp = SubResource( 17 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
