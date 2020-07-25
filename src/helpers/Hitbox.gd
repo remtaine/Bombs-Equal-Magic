@@ -57,7 +57,7 @@ func _on_Hitbox_body_entered(body):
 			print(damage)
 			body.update_health(damage)
 		
-	if terrain_damage:
+	if terrain_damage and max_dist != 0:
 		emit_signal("did_terrain_damage", global_position, max_dist)
 			#TODO add terrain damage
 			

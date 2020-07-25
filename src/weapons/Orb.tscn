@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://images/weapons/orb/orb_anim_strip_6.png" type="Texture" id=1]
 [ext_resource path="res://src/helpers/Label.gd" type="Script" id=2]
@@ -98,7 +98,27 @@ orbit_velocity_random = 0.0
 scale_curve = SubResource( 20 )
 color_ramp = SubResource( 18 )
 
-[node name="Orb" type="RigidBody2D"]
+[sub_resource type="Animation" id=22]
+resource_name = "waver"
+length = 2.0
+loop = true
+step = 0.25
+tracks/0/type = "value"
+tracks/0/path = NodePath("AnimatedSprite:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.75, 1, 1.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[node name="Orb" type="RigidBody2D" groups=[
+"weapons",
+]]
 position = Vector2( -0.302078, 0.67968 )
 z_index = 5
 collision_layer = 8
@@ -114,17 +134,18 @@ scale = Vector2( 0.320001, 0.320001 )
 shape = SubResource( 2 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+self_modulate = Color( 1, 1, 1, 0.84265 )
 position = Vector2( 0, -1 )
 frames = SubResource( 14 )
 animation = "move"
-frame = 5
+frame = 4
 playing = true
 
 [node name="CircleSprite" type="Sprite" parent="AnimatedSprite"]
 
 [node name="Hitbox" parent="." instance=ExtResource( 6 )]
 position = Vector2( 0.11775, -0.687302 )
-scale = Vector2( 0.974214, 0.964348 )
+scale = Vector2( 1.73422, 1.71665 )
 
 [node name="CollisionShape2D" parent="Hitbox" index="0"]
 shape = SubResource( 15 )
@@ -163,6 +184,10 @@ texture = ExtResource( 4 )
 [node name="ExplodeTimer" type="Timer" parent="."]
 wait_time = 8.0
 one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "waver"
+anims/waver = SubResource( 22 )
 [connection signal="animation_finished" from="AnimatedSprite" to="." method="_on_AnimatedSprite_animation_finished"]
 [connection signal="frame_changed" from="AnimatedSprite" to="." method="_on_AnimatedSprite_frame_changed"]
 [connection signal="finished" from="Audio/ExplosionAudio" to="." method="_on_ExplosionAudio_finished"]

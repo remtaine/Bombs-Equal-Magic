@@ -72,8 +72,7 @@ func destroy(position : Vector2, radius : float):
 	# Wait until all viewports have re-rendered before pushing our viewport to the destruction shader.
 	yield(VisualServer, "frame_post_draw")
 	republish_sprite()
-
-
+	
 func _cull_foreground_duplicates():
 	for dup in _to_cull:
 		dup.queue_free()

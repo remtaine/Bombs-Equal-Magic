@@ -9,16 +9,21 @@ script = ExtResource( 2 )
 
 [node name="BlueTeam" type="YSort" parent="."]
 
-[node name="Mage3" parent="BlueTeam" instance=ExtResource( 1 )]
-instance_name = "Cosmo"
-
 [node name="Mage1" parent="BlueTeam" instance=ExtResource( 1 )]
 instance_name = "Alvaro"
 
 [node name="Mage2" parent="BlueTeam" instance=ExtResource( 1 )]
 instance_name = "Basil"
 
+[node name="Mage3" parent="BlueTeam" instance=ExtResource( 1 )]
+instance_name = "Cosmo"
+
 [node name="RedTeam" type="YSort" parent="."]
+
+[node name="Mushroom3" parent="RedTeam" instance=ExtResource( 3 )]
+instance_name = "Fiona"
+sprite_type = "Mushroom"
+is_bot = true
 
 [node name="Mushroom1" parent="RedTeam" instance=ExtResource( 3 )]
 instance_name = "Delilah"
@@ -27,10 +32,5 @@ is_bot = true
 
 [node name="Mushroom2" parent="RedTeam" instance=ExtResource( 3 )]
 instance_name = "Esme"
-sprite_type = "Mushroom"
-is_bot = true
-
-[node name="Mushroom3" parent="RedTeam" instance=ExtResource( 3 )]
-instance_name = "Fiona"
 sprite_type = "Mushroom"
 is_bot = true

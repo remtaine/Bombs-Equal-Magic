@@ -26,6 +26,8 @@ func _ready():
 	
 	world_camera_man.setup(self)
 	turn_queue.setup(self)
+	turn_timer.setup(self)
+	
 	for blue_child in turn_queue.get_child(0).get_children():
 		blue_child.level_setup(self)
 		add_team_hp(blue_team_hp,blue_child.hp)
@@ -37,8 +39,8 @@ func _ready():
 func _input(event):
 #	if event.is_action_pressed("ui_cancel"): #esc
 #		get_tree().quit()
-	if event.is_action_pressed("reset"): #R
-		get_tree().reload_current_scene()
+#	if event.is_action_pressed("reset"): #R
+#		get_tree().reload_current_scene()
 	if event.is_action_pressed("go_to_menu"): #R
 		get_tree().change_scene("res://src/menus/MainMenu.tscn")
 #	if event.is_action_pressed("toggle_labels"): #T
@@ -94,3 +96,8 @@ func reset_hp(team_hp):
 
 func _on_terrain_damage(pos, radius):
 	stage_sprite.destroy(pos, radius)
+
+func _on_turn_almost_done():
+	print("YOUVE FORCED MY HAND")
+	if turn_queue.active_character.is_bot:
+		turn_queue.active_character.force_move()

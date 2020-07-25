@@ -31,7 +31,7 @@ var has_played_bounce : bool = false
 
 func _init():
 	speed = 450
-	damage = 50
+	damage = 1000
 	knockback = 100
 	max_distance = 36
 	

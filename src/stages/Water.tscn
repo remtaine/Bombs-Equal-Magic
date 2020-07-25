@@ -1,14 +1,14 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://images/white square.png" type="Texture" id=1]
 [ext_resource path="res://src/helpers/Hitbox.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/stages/Water.gd" type="Script" id=3]
 
 [node name="Water" type="Sprite"]
 self_modulate = Color( 0.282353, 0.517647, 0.831373, 1 )
 scale = Vector2( 10, 10 )
 texture = ExtResource( 1 )
+script = ExtResource( 3 )
 
 [node name="Hitbox" parent="." instance=ExtResource( 2 )]
-visible = false
-position = Vector2( 1000.06, 185.357 )
-scale = Vector2( 99.64, 17.84 )
+scale = Vector2( 3.14598, 3.14598 )

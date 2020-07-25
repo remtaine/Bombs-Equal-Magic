@@ -66,4 +66,7 @@ func approach():
 		if camera.leader.is_in_group("characters"):
 			camera.leader.can_input = true
 			emit_signal("start_turn")
+		elif camera.leader.is_in_group("weapons"):
+			camera.leader.apply_stored_force()
+		print("PASSED THE TORCH TO ", camera.leader.instance_name)
 		camera.leader.camera.current = true

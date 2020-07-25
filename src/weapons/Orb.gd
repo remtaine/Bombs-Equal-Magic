@@ -31,29 +31,29 @@ var has_played_bounce : bool = false
 
 func _init():
 	speed = 100
-	damage = 30
+	randomize()
+	damage = 108 + (randi() % 7)
 	knockback = 50
 	max_distance = 10
 	
-func _ready():	
+func _ready():
 	sprite.offset.y = 0
 	mode = RigidBody2D.MODE_CHARACTER
 	
 	sprite.set_animation("ready")
-	hitbox.setup(self, true)
+	hitbox.setup(self, false, 20, true)
 	stream_particles.visible = true
 	setup_sounds()
-
+	
 func setup(o, pos, dir, throw_strength): #throw strength is from 20 to 100, output should be 100 to 300
 	owned_by = o
 	direction = dir.normalized()
 	strength = float(throw_strength/100)
-	position = to_local(pos)
+	global_position = (pos)
 	velocity = speed * direction
 	velocity = speed * direction
 	max_velocity = speed * direction
 	connect("finished_exploding", o, "bomb_exploded")
-	apply_central_impulse(velocity)
 	connect("did_terrain_damage", o, "_on_terrain_damage")
 	$ExplodeTimer.wait_time = $ExplodeTimer.wait_time * strength
 
@@ -101,15 +101,17 @@ func _on_ExplodeTimer_timeout():
 	mode = RigidBody2D.MODE_STATIC
 	stream_particles.visible = false
 	#add screenshake
+	$AnimationPlayer.stop()
+	sprite.self_modulate.a = 1.0
 	play_sound("explode")
 	sprite.set_animation("explode")
 #	sprite.offset.y = -12
-	sprite.scale *= 3
+	sprite.scale *= 5
 #	camera.position.y +=2
 
 func _on_AnimatedSprite_animation_finished():
 	if sprite.animation == "explode":
 		print("DONE EXPLODING")
-		yield(get_tree().create_timer(1.0), "timeout")
+		yield(get_tree().create_timer(4.0), "timeout")
 		emit_signal("finished_exploding")
 		queue_free()

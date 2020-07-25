@@ -1,4 +1,4 @@
-extends ColorRect
+extends Sprite
 
 var damage : int = 100
 onready var hitbox = $Hitbox

@@ -27,12 +27,14 @@ func setup(o, pos, dir, throw_strength): #throw strength is from 20 to 100, outp
 	owned_by = o
 	direction = dir.normalized()
 	strength = float(throw_strength/100)
-	position = to_local(pos)
+	global_position = pos
 	velocity = speed * direction * strength
 	max_velocity = speed * direction
 	connect("finished_exploding", o, "bomb_exploded")
-	apply_central_impulse(velocity)
 	connect("did_terrain_damage", o, "_on_terrain_damage")
 
 func _on_terrain_damage(pos, radius):
 	emit_signal("did_terrain_damage", pos, radius)
+
+func apply_stored_force():
+	apply_central_impulse(velocity)	

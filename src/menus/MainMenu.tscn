@@ -261,7 +261,7 @@ margin_top = -25.5543
 margin_right = 274.122
 margin_bottom = 95.4457
 custom_fonts/font = SubResource( 4 )
-text = "Warfare"
+text = "=Magic"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -272,7 +272,7 @@ margin_top = -82.1299
 margin_right = 217.122
 margin_bottom = 38.8704
 custom_fonts/font = SubResource( 4 )
-text = "Mage"
+text = "Bombs"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -287,7 +287,6 @@ custom_fonts/font = SubResource( 5 )
 custom_constants/line_spacing = 0
 text = "WASD/arrowkeys to move
 WS/Up-Down to aim
-AD/Left-Right to change weapon
 J/Z to shoot (hold)
 K/X to pan camera"
 __meta__ = {
@@ -301,7 +300,7 @@ margin_top = 160.0
 margin_right = 167.0
 margin_bottom = 187.0
 custom_fonts/font = SubResource( 6 )
-text = "v0.1 - made for the Ranged Combat Jam
+text = "v1.0.3 - made for the Ranged Combat Jam
 Programming by Efigi - SFX by mr_studders "
 __meta__ = {
 "_edit_use_anchors_": false
@@ -353,21 +352,21 @@ playing = true
 position = Vector2( 124.151, 135.644 )
 frames = ExtResource( 5 )
 animation = "idle"
-frame = 5
+frame = 3
 playing = true
 
 [node name="Mushroom2" type="AnimatedSprite" parent="Sprites"]
 position = Vector2( 297.692, 40.2134 )
 frames = ExtResource( 5 )
 animation = "idle"
-frame = 5
+frame = 3
 playing = true
 
 [node name="Mushroom3" type="AnimatedSprite" parent="Sprites"]
 position = Vector2( 395.25, 152.529 )
 frames = ExtResource( 5 )
 animation = "idle"
-frame = 4
+frame = 2
 playing = true
 
 [node name="Audio" type="Node2D" parent="."]

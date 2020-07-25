@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://src/characters/Mage Frames.tres" type="SpriteFrames" id=1]
 [ext_resource path="res://src/characters/Mage.gd" type="Script" id=2]
@@ -7,8 +7,6 @@
 [ext_resource path="res://src/helpers/Label.gd" type="Script" id=8]
 [ext_resource path="res://images/crosshairs/arrowRight.png" type="Texture" id=9]
 [ext_resource path="res://fonts/body text/Pixels TEXT.ttf" type="DynamicFontData" id=10]
-[ext_resource path="res://images/weapons/spear/spear.png" type="Texture" id=11]
-[ext_resource path="res://images/weapons/orb/orb_anim_strip_6.png" type="Texture" id=12]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 3.40263, 10 )
@@ -32,7 +30,7 @@ team_color = Color( 0.403922, 0.560784, 0.796078, 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = ExtResource( 1 )
 animation = "run"
-frame = 5
+frame = 1
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -41,6 +39,7 @@ scale = Vector2( 1, 0.72 )
 shape = SubResource( 1 )
 
 [node name="Labels" type="Node2D" parent="."]
+z_index = 9
 
 [node name="NameLabel" type="Label" parent="Labels"]
 self_modulate = Color( 0.403922, 0.560784, 0.796078, 1 )
@@ -88,12 +87,14 @@ script = ExtResource( 8 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+is_on = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 0, -35.2228 )
 
 [node name="CrosshairPivot" type="Position2D" parent="."]
 show_behind_parent = true
+z_index = 10
 
 [node name="Crosshair" type="Sprite" parent="CrosshairPivot"]
 self_modulate = Color( 1, 1, 1, 0 )
@@ -104,9 +105,9 @@ texture = ExtResource( 4 )
 [node name="Arrow" type="TextureProgress" parent="CrosshairPivot"]
 anchor_top = 0.5
 anchor_bottom = 0.5
-margin_left = 6.20698
+margin_left = 8.6896
 margin_top = -4.99833
-margin_right = 106.207
+margin_right = 108.69
 margin_bottom = 95.0017
 rect_scale = Vector2( 0.3, 0.1 )
 texture_under = ExtResource( 9 )
@@ -120,19 +121,6 @@ __meta__ = {
 position = Vector2( 8.56905, -0.732395 )
 
 [node name="Bomb" parent="CrosshairPivot/Weapons" instance=ExtResource( 5 )]
-
-[node name="Spear" parent="CrosshairPivot/Weapons" instance=ExtResource( 5 )]
-visible = false
-position = Vector2( 1.46132, 0.36533 )
-rotation = -1.5708
-texture = ExtResource( 11 )
-region_enabled = false
-
-[node name="Orb" parent="CrosshairPivot/Weapons" instance=ExtResource( 5 )]
-visible = false
-position = Vector2( 0.126373, -0.168497 )
-texture = ExtResource( 12 )
-region_rect = Rect2( 40, 0, 8, 8 )
 
 [node name="Audio" type="Node2D" parent="."]
 
